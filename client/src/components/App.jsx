@@ -1,10 +1,10 @@
-import '../App.css'
+import Container from '@mui/material/Container';
 
 function App() {
   return (
-    <div>
+    <Container>
       Hello World!
-    </div>
+    </Container>
   )
 }
 
