@@ -1,0 +1,8 @@
+services:
+  postgres_db:
+    image: postgres:latest
+    ports:
+      - ${POSTGRES_DB_PORTS}
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
