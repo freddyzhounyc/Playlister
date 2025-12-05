@@ -23,7 +23,7 @@ class authManager {
             });
         }
     }
-    verifyUser = (req, res) => {
+    verifyUser = (req) => {
         try {
             const token = req.cookies.token;
             if (!token)
