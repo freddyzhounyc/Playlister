@@ -1,5 +1,5 @@
 import Container from '@mui/material/Container';
-import PlaylisterAppBar from './PlaylisterAppBar';
+import PlaylisterAppBar from './components/PlaylisterAppBar';
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 
 function App() {
