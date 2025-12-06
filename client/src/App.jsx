@@ -4,6 +4,7 @@ import { AuthContextProvider } from './auth/AuthContextProvider';
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import WelcomeScreen from './screens/WelcomeScreen';
 import RegisterScreen from './screens/RegisterScreen';
+import SignInScreen from './screens/SignInScreen';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Routes>
             <Route path="/" element={<WelcomeScreen />} />
             <Route path="/register" element={<RegisterScreen />} />
+            <Route path="/login" element={<SignInScreen />} />
           </Routes>
         </Container>
       </AuthContextProvider>

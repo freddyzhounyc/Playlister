@@ -36,7 +36,7 @@ export const registerUser = async (profileImage, userName, email, password, pass
             password: password,
             passwordVerify: passwordVerify
         })
-    })
+    });
     return response;
 }
 

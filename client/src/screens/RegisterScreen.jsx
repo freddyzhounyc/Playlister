@@ -11,7 +11,7 @@ import Copyright from '../components/Copyright';
 import ClearableTextField from '../components/ClearableTextField';
 
 const RegisterScreen = () => {
-    const { auth } = useContext(AuthContext)
+    const { auth } = useContext(AuthContext);
     const [avatarInput, setAvatarInput] = useState("");
     const [userNameInput, setUserNameInput] = useState("");
     const [emailInput, setEmailInput] = useState("");
