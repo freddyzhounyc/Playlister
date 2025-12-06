@@ -35,6 +35,7 @@ class AuthController {
                 }
             });
         } catch (err) {
+            console.log(err);
             return res.status(500).json({
                 err: err
             });
@@ -76,6 +77,14 @@ class AuthController {
                 err: err
             });
         }
+    }
+    logoutUser = (req, res) => {
+        res.cookie("token", "", {
+            httpOnly: true,
+            expires: new Date(0),
+            secure: true,
+            sameSite: "none"
+        }).send();
     }
     registerUser = async (req, res) => {
         try {
