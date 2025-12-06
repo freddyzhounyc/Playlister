@@ -101,9 +101,10 @@ const PlaylisterAppBar = () => {
 
     let menu = loggedOutMenu;
 
+    // 1B4079
     return (
         <Box sx={{ flexGrow: 1 }}>
-            <AppBar position="static">
+            <AppBar position="static" sx={{ backgroundColor: "#EE06FF", border: "1px solid, black" }}>
                 <Toolbar sx={{ height: "70px" }}>
                     <Typography                        
                         variant="h3"
