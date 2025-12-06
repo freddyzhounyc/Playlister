@@ -127,6 +127,16 @@ function AuthContextProvider(props) {
             });
         }
     }
+    auth.logoutUser = async () => {
+        const response = await authRequestSender.logoutUser();
+        if (response.status === 200) {
+            authReducer({
+                type: AuthActionType.LOGOUT_USER,
+                payload: null
+            });
+            navigate("/");
+        }
+    }
 
     return (
         <AuthContext.Provider value={{auth}}>
