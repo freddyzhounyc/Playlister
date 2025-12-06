@@ -3,6 +3,7 @@ import PlaylisterAppBar from './components/PlaylisterAppBar';
 import { AuthContextProvider } from './auth/AuthContextProvider';
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import WelcomeScreen from './screens/WelcomeScreen';
+import RegisterScreen from './screens/RegisterScreen';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
           <PlaylisterAppBar />
           <Routes>
             <Route path="/" element={<WelcomeScreen />} />
+            <Route path="/register" element={<RegisterScreen />} />
           </Routes>
         </Container>
       </AuthContextProvider>

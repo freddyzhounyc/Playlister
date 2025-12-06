@@ -19,8 +19,8 @@ const WelcomeScreen = () => {
 
     return (
         <Box className="screen" 
-        sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "77vh", border: "1px solid, black"}}>
-            <Box sx={{display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center"}}>
+        sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", height: "77vh", border: "1px solid, black" }}>
+            <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
                 <Typography variant="h2" component="h1" fontWeight={500}>
                     The Playlister
                 </Typography>
