@@ -4,12 +4,14 @@ import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
 import Link from '@mui/material/Link';
 import LockOutlineIcon from '@mui/icons-material/LockOutline';
-import { useState, useRef } from 'react';
+import { useState, useRef, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import AuthContext from '../auth/AuthContextProvider'
 import Copyright from '../components/Copyright';
 import ClearableTextField from '../components/ClearableTextField';
 
 const RegisterScreen = () => {
+    const { auth } = useContext(AuthContext)
     const [avatarInput, setAvatarInput] = useState("");
     const [userNameInput, setUserNameInput] = useState("");
     const [emailInput, setEmailInput] = useState("");
@@ -19,7 +21,8 @@ const RegisterScreen = () => {
     const navigate = useNavigate();
 
     const handleCreateAccount = (event) => {
-        console.log("TODO");
+        event.preventDefault();
+        auth.registerUser(avatarInput, userNameInput, emailInput, passwordInput, passwordConfirmInput);
     }
     const handleGoToSignIn = (event) => {
         navigate("/login");
@@ -60,8 +63,8 @@ const RegisterScreen = () => {
                 <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px" }}>
                     <ClearableTextField value={userNameInput} label="User Name" setInputValue={setUserNameInput}/>
                     <ClearableTextField value={emailInput} label="Email" setInputValue={setEmailInput}/>
-                    <ClearableTextField value={passwordInput} label="Password" setInputValue={setPasswordInput}/>
-                    <ClearableTextField value={passwordConfirmInput} label="Password Confirm" setInputValue={setPasswordConfirmInput}/>
+                    <ClearableTextField value={passwordInput} label="Password" type="password" setInputValue={setPasswordInput}/>
+                    <ClearableTextField value={passwordConfirmInput} label="Password Confirm" type="password" setInputValue={setPasswordConfirmInput}/>
                 </Box>
                 <Button variant="contained" onClick={handleCreateAccount}
                 sx={{ width: "525px", height: "37px", marginTop: "40px", backgroundColor: "#2C2C2C", textTransform: "none" }}>
