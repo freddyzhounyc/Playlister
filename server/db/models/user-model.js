@@ -12,7 +12,7 @@ const createUser = (sequelize) => {
             autoIncrement: true
         },
         profileImage: {
-            type: DataTypes.STRING,
+            type: DataTypes.TEXT,
             allowNull: false,
             validate: {
                 notEmpty: true

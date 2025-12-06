@@ -72,6 +72,61 @@ function AuthContextProvider(props) {
             });
         }
     }
+    auth.registerUser = async (profileImage, userName, email, password, passwordVerify) => {
+        try {
+            const response = await authRequestSender.registerUser(profileImage, userName, email, password, passwordVerify);
+            if (response.status === 200) {
+                const data = await response.json();
+                authReducer({
+                    type: AuthActionType.REGISTER_USER,
+                    payload: {
+                        user: data.user,
+                        loggedIn: true,
+                        errorMessage: null
+                    }
+                });
+                navigate("/login");
+                auth.loginUser(email, password);
+            } else
+                throw new Error(data.errorMessage);
+        } catch (err) {
+            authReducer({
+                type: AuthActionType.REGISTER_USER,
+                payload: {
+                    user: auth.user,
+                    loggedIn: false,
+                    errorMessage: err.message
+                }
+            });
+        }
+    }
+    auth.loginUser = async (email, password) => {
+        try {
+            const response = await authRequestSender.loginUser(email, password);
+            if (response.status === 200) {
+                const data = await response.json();
+                authReducer({
+                    type: AuthActionType.LOGIN_USER,
+                    payload: {
+                        user: data.user,
+                        loggedIn: true,
+                        errorMessage: null
+                    }
+                });
+                navigate("/playlists");
+            } else
+                throw new Error(data.errorMessage);
+        } catch (err) {
+            authReducer({
+                type: AuthActionType.LOGIN_USER,
+                payload: {
+                    user: auth.user,
+                    loggedIn: false,
+                    errorMessage: err.message
+                }
+            });
+        }
+    }
 
     return (
         <AuthContext.Provider value={{auth}}>
