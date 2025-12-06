@@ -28,6 +28,8 @@ const startServer = async () => {
     // Routes
     const authRouter = require('./routes/auth-router');
     app.use("/auth", authRouter);
+    const storeRouter = require('./routes/store-router');
+    app.use("/api", storeRouter);
 
     app.listen(PORT, () => console.log("Backend server listening on port " + PORT));
 }

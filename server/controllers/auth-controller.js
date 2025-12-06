@@ -31,7 +31,8 @@ class AuthController {
                 user: {
                     profileImage: loggedInUser.profileImage,
                     userName: loggedInUser.userName,
-                    email: loggedInUser.email
+                    email: loggedInUser.email,
+                    userId: loggedInUser.id
                 }
             });
         } catch (err) {
@@ -69,7 +70,8 @@ class AuthController {
                 user: {
                     profileImage: existingUser.profileImage,
                     userName: existingUser.userName,
-                    email: existingUser.email
+                    email: existingUser.email,
+                    userId: existingUser.id
                 }
             });
         } catch (err) {
@@ -124,13 +126,14 @@ class AuthController {
                 user: {
                     profileImage: savedUser.profileImage,
                     userName: savedUser.userName,
-                    email: savedUser.email
+                    email: savedUser.email,
+                    userId: savedUser.id
                 }
             });
         } catch (err) {
             console.log(err.message);
             return res.status(500).json({
-                err: err
+                errorMessage: err.message
             });
         }
     }

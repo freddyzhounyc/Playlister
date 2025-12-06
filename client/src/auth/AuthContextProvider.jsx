@@ -8,7 +8,8 @@ export const AuthActionType = {
     GET_LOGGED_IN: "GET_LOGGED_IN",
     LOGIN_USER: "LOGIN_USER",
     LOGOUT_USER: "LOGOUT_USER",
-    REGISTER_USER: "REGISTER_USER"
+    REGISTER_USER: "REGISTER_USER",
+    UPDATE_USER: "UPDATE_USER"
 }
 
 function AuthContextProvider(props) {
@@ -54,6 +55,13 @@ function AuthContextProvider(props) {
                     errorMessage: payload.errorMessage
                 })
             }
+            case AuthActionType.UPDATE_USER: {
+                return setAuth({
+                    user: payload.user,
+                    loggedIn: payload.loggedIn,
+                    errorMessage: payload.errorMessage
+                })
+            }
             default:
                 return auth;
         }
@@ -75,8 +83,8 @@ function AuthContextProvider(props) {
     auth.registerUser = async (profileImage, userName, email, password, passwordVerify) => {
         try {
             const response = await authRequestSender.registerUser(profileImage, userName, email, password, passwordVerify);
+            const data = await response.json();
             if (response.status === 200) {
-                const data = await response.json();
                 authReducer({
                     type: AuthActionType.REGISTER_USER,
                     payload: {
@@ -103,8 +111,8 @@ function AuthContextProvider(props) {
     auth.loginUser = async (email, password) => {
         try {
             const response = await authRequestSender.loginUser(email, password);
+            const data = await response.json();
             if (response.status === 200) {
-                const data = await response.json();
                 authReducer({
                     type: AuthActionType.LOGIN_USER,
                     payload: {
@@ -135,6 +143,27 @@ function AuthContextProvider(props) {
                 payload: null
             });
             navigate("/");
+        }
+    }
+    auth.updateUser = (updatedUser, errorMessage) => {
+        if (!errorMessage) {
+            authReducer({
+                type: AuthActionType.UPDATE_USER,
+                payload: {
+                    user: updatedUser,
+                    loggedIn: true,
+                    errorMessage: null
+                }
+            });
+        } else {
+            authReducer({
+                type: AuthActionType.UPDATE_USER,
+                payload: {
+                    user: auth.user,
+                    loggedIn: auth.loggedIn,
+                    errorMessage: errorMessage
+                }
+            });
         }
     }
 
