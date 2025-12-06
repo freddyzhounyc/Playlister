@@ -2,16 +2,18 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
-import Link from '@mui/material/Link';
 import LockOutlineIcon from '@mui/icons-material/LockOutline';
-import { useState, useRef, useContext } from 'react';
+import { useState, useRef, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AuthContext from '../auth/AuthContextProvider'
+import AuthContext from '../auth/AuthContextProvider';
+import GlobalStoreContext from '../store/GlobalStoreContextProvider';
 import Copyright from '../components/Copyright';
 import ClearableTextField from '../components/ClearableTextField';
 
-const RegisterScreen = () => {
+const EditAccountScreen = () => {
     const { auth } = useContext(AuthContext);
+    const { store } = useContext(GlobalStoreContext);
+
     const [avatarInput, setAvatarInput] = useState("");
     const [userNameInput, setUserNameInput] = useState("");
     const [emailInput, setEmailInput] = useState("");
@@ -20,12 +22,24 @@ const RegisterScreen = () => {
     const filePickerRef = useRef(null);
     const navigate = useNavigate();
 
-    const handleCreateAccount = (event) => {
+    // Not logged in!
+    useEffect(() => {
+        if (!auth.user)
+            navigate("/login");
+    }, []);
+
+    const handleConfirmAccountEdit = (event) => {
         event.preventDefault();
-        auth.registerUser(avatarInput, userNameInput, emailInput, passwordInput, passwordConfirmInput);
+        store.updateUser({ 
+            profileImage: avatarInput,
+            userName: userNameInput,
+            email: emailInput,
+            password: passwordInput,
+            passwordVerify: passwordConfirmInput
+        });
     }
-    const handleGoToSignIn = (event) => {
-        navigate("/login");
+    const handleCancelAccountEdit = (event) => {
+        navigate(-1);
     }
     const handleSelectAvatar = (event) => {
         filePickerRef.current.click();
@@ -57,7 +71,7 @@ const RegisterScreen = () => {
                 <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
                     <LockOutlineIcon sx={{ fontSize: "55px", marginBottom: "5px" }}/>
                     <Typography variant="h5" component="h1" sx={{ fontSize: "30px", marginBottom: "37px" }}>
-                        Create Account
+                        Edit Account
                     </Typography>
                 </Box>
                 <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px" }}>
@@ -66,16 +80,19 @@ const RegisterScreen = () => {
                     <ClearableTextField value={passwordInput} label="Password" type="password" setInputValue={setPasswordInput}/>
                     <ClearableTextField value={passwordConfirmInput} label="Password Confirm" type="password" setInputValue={setPasswordConfirmInput}/>
                 </Box>
-                <Button variant="contained" onClick={handleCreateAccount}
-                sx={{ width: "525px", height: "37px", marginTop: "40px", backgroundColor: "#2C2C2C", textTransform: "none" }}>
-                    Create Account
-                </Button>
-                <Link underline="none" onClick={handleGoToSignIn} sx={{ marginTop: "10px", color: "red", "&:hover": { cursor: "pointer" } }}>
-                    Already have an account? Sign In
-                </Link>
+                <Box sx={{ display: "flex", gap: "20px" }}>
+                    <Button variant="contained" onClick={handleConfirmAccountEdit}
+                    sx={{ width: "252px", height: "37px", marginTop: "40px", backgroundColor: "#2C2C2C", textTransform: "none" }}>
+                        Complete
+                    </Button>
+                    <Button variant="contained" onClick={handleCancelAccountEdit}
+                    sx={{ width: "252px", height: "37px", marginTop: "40px", backgroundColor: "#2C2C2C", textTransform: "none" }}>
+                        Cancel
+                    </Button>
+                </Box>
                 <Copyright sx={{ marginTop: "70px" }}/>
             </Box>
         </Box>
     )
 }
-export default RegisterScreen;
+export default EditAccountScreen;

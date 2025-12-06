@@ -16,6 +16,7 @@ import AuthContext from '../auth/AuthContextProvider';
 
 const PlaylisterAppBar = () => {
     const { auth } = useContext(AuthContext);
+
     const [anchorEl, setAnchorEl] = useState(null);
     const isMenuOpen = Boolean(anchorEl);
     const navigate = useNavigate();
@@ -110,10 +111,20 @@ const PlaylisterAppBar = () => {
             }}>Logout</MenuItem>
         </Menu>
     );
+    const accountIconLoggedOut = (
+        <Avatar sx={{ width: 50, height: 50, backgroundColor: "white" }}>
+            <PersonIcon sx={{ fontSize: 35, color: "black" }}/>
+        </Avatar>
+    );
 
     let menu = loggedOutMenu;
-    if (auth.loggedIn)
+    let accountIcon = accountIconLoggedOut;
+    if (auth.loggedIn) {
         menu = loggedInMenu;
+        accountIcon = (
+            <Avatar src={auth.user.profileImage} sx={{ width: 50, height: 50, backgroundColor: "white" }} />
+        );
+    }
 
     // 1B4079
     return (
@@ -156,9 +167,7 @@ const PlaylisterAppBar = () => {
                             onClick={handleProfileMenuOpen}
                             color="inherit"
                         >
-                            <Avatar sx={{ width: 50, height: 50, backgroundColor: "white" }}>
-                                <PersonIcon sx={{ fontSize: 35, color: "black" }}/>
-                            </Avatar>
+                            { accountIcon }
                         </IconButton>
                     </Box>
                 </Toolbar>
