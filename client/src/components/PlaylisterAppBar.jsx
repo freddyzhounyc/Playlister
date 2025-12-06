@@ -6,13 +6,16 @@ import IconButton from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
 import PersonIcon from '@mui/icons-material/Person';
 import HomeFilledIcon from '@mui/icons-material/HomeFilled';
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import AuthContext from '../auth/AuthContextProvider';
 
 const PlaylisterAppBar = () => {
+    const { auth } = useContext(AuthContext);
     const [anchorEl, setAnchorEl] = useState(null);
     const isMenuOpen = Boolean(anchorEl);
     const navigate = useNavigate();
@@ -33,9 +36,18 @@ const PlaylisterAppBar = () => {
     }
     const handleMenuCloseEditAccount = () => {
         setAnchorEl(null);
-        navigate("/edit_account")
+        navigate("/editAccount")
     }
-    // TODO handleMenuCloseLogout
+    const handleMenuCloseLogout = () => {
+        setAnchorEl(null);
+        auth.logoutUser(); // Sends user to "/"
+    }
+    const handleClickPlaylists = (event) => {
+        navigate("/playlists");
+    }
+    const handleClickSongCatalog = (event) => {
+        navigate("/songs");
+    }
 
     const menuId = "primary-search-account-menu";
     const loggedOutMenu = (
@@ -90,7 +102,7 @@ const PlaylisterAppBar = () => {
                     backgroundColor: "rgba(58, 151, 240, 0.3)"
                 }
             }}>Edit Account</MenuItem>
-            <MenuItem onClick={handleMenuClose}
+            <MenuItem onClick={handleMenuCloseLogout}
             sx={{
                 "&:hover": {
                     backgroundColor: "rgba(58, 151, 240, 0.3)"
@@ -100,6 +112,8 @@ const PlaylisterAppBar = () => {
     );
 
     let menu = loggedOutMenu;
+    if (auth.loggedIn)
+        menu = loggedInMenu;
 
     // 1B4079
     return (
@@ -117,7 +131,21 @@ const PlaylisterAppBar = () => {
                             </Avatar>
                         </Link>
                     </Typography>
+                    <Box>
+                        <Button variant="contained" onClick={handleClickPlaylists}
+                        sx={{ width: "auto", height: "37px", marginLeft: "15px", backgroundColor: "#2C2C2C", textTransform: "none" }}>
+                            Playlists
+                        </Button>
+                        <Button variant="contained" onClick={handleClickSongCatalog}
+                        sx={{ width: "auto", height: "37px", marginLeft: "15px", backgroundColor: "#3A64C4", textTransform: "none" }}>
+                            Song Catalog
+                        </Button>
+                    </Box>
                     <Box sx={{ flexGrow: 1 }}></Box>
+                    <Typography variant="h4" component="h2" sx={{}}>
+                        The Playlister
+                    </Typography>
+                    <Box sx={{ flexGrow: 2.5 }}></Box>
                     <Box sx={{ height: "70px", display: { xs: 'none', md: 'flex' } }}>
                         <IconButton
                             size="large"

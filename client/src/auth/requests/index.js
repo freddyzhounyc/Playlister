@@ -21,7 +21,13 @@ export const loginUser = async (email, password) => {
     });
     return response;
 }
-
+export const logoutUser = async () => {
+    const response = await fetch(backendAuthURL + "/logout", {
+        method: "GET",
+        credentials: "include"
+    });
+    return response;
+}
 export const registerUser = async (profileImage, userName, email, password, passwordVerify) => {
     const response = await fetch(backendAuthURL + "/register", {
         method: "POST",
@@ -43,6 +49,7 @@ export const registerUser = async (profileImage, userName, email, password, pass
 const authRequestSender = {
     getLoggedIn,
     loginUser,
+    logoutUser,
     registerUser
 }
 export default authRequestSender;
