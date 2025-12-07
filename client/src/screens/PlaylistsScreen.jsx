@@ -1,9 +1,12 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import Link from '@mui/material/Link';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import SearchIcon from '@mui/icons-material/Search';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import GlobalStoreContext from '../store/GlobalStoreContextProvider';
 import ClearableTextField from '../components/ClearableTextField';
 import PlaylistCard from '../components/PlaylistCard';
@@ -16,6 +19,33 @@ const PlaylistsScreen = () => {
     const [searchBySongTitle, setSearchBySongTitle] = useState("");
     const [searchBySongArtist, setSearchBySongArtist] = useState("");
     const [searchBySongYear, setSearchBySongYear] = useState("");
+
+    const [sortByIndex, setSortByIndex] = useState(0);
+    const sortByChoices = ["Listeners (Hi-Lo)", "Listeners (Lo-Hi)", "Playlist Name (Hi-Lo)", 
+                       "Playlist Name (Lo-Hi)", "User Name (Hi-Lo)", "User Name (Lo-Hi)"];
+
+    const [anchorEl, setAnchorEl] = useState(null);
+    const isMenuOpen = Boolean(anchorEl);
+
+    useEffect(() => {
+        store.loadIdNamePairs();
+    }, []);
+
+    const handleProfileMenuOpen = (event) => {
+        setAnchorEl(event.currentTarget);
+    }
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+    }
+    const handleMenuCloseBy = (index) => {
+        setSortByIndex(index);
+        handleMenuClose();
+    }
+
+    const handleCreateNewPlaylist = async () => {
+        await store.createNewList();
+        await store.loadIdNamePairs();
+    }
 
     return (
         <Box className="screen"
@@ -46,11 +76,49 @@ const PlaylistsScreen = () => {
             <Box sx={{ borderLeft: "1px solid grey", height: "70vh", position: "relative", right: "3%" }}/>
             <Box sx={{ display: "flex", flexDirection: "column", height: "85%", width: "45%" }}>
                 <Box sx={{ display: "flex" }}>
-                    <Box>
+                    <Box sx={{ display: "flex" }}>
                         <Typography variant="h5" component="h3" sx={{ fontWeight: 500 }}>
                             Sort:
                         </Typography>
+                        <Link underline="none" onClick={handleProfileMenuOpen}>
+                            <Typography variant="h5" component="h3" sx={{ marginLeft: "5px", fontWeight: 500, "&:hover": { cursor: "pointer" } }}>
+                                {sortByChoices[sortByIndex]}
+                            </Typography>
+                        </Link>
                     </Box>
+                    <Menu
+                    anchorEl={anchorEl}
+                    anchorOrigin={{
+                        vertical: "bottom",
+                        horizontal: "right"
+                    }}
+                    keepMounted
+                    transformOrigin={{
+                        vertical: "top",
+                        horizontal: "right"
+                    }}
+                    open={isMenuOpen}
+                    onClose={handleMenuClose}
+                    >
+                        <MenuItem onClick={() => handleMenuCloseBy(0)} sx={{ "&:hover": { backgroundColor: "rgba(58, 151, 240, 0.3)" } }}>
+                            Listeners (Hi-Lo)
+                        </MenuItem>
+                        <MenuItem onClick={() => handleMenuCloseBy(1)} sx={{ "&:hover": { backgroundColor: "rgba(58, 151, 240, 0.3)" } }}>
+                            Listeners (Lo-Hi)
+                        </MenuItem>
+                        <MenuItem onClick={() => handleMenuCloseBy(2)} sx={{ "&:hover": { backgroundColor: "rgba(58, 151, 240, 0.3)" } }}>
+                            Playlist Name (Hi-Lo)
+                        </MenuItem>
+                        <MenuItem onClick={() => handleMenuCloseBy(3)} sx={{ "&:hover": { backgroundColor: "rgba(58, 151, 240, 0.3)" } }}>
+                            Playlist Name (Lo-Hi)
+                        </MenuItem>
+                        <MenuItem onClick={() => handleMenuCloseBy(4)} sx={{ "&:hover": { backgroundColor: "rgba(58, 151, 240, 0.3)" } }}>
+                            User Name (Hi-Lo)
+                        </MenuItem>
+                        <MenuItem onClick={() => handleMenuCloseBy(5)} sx={{ "&:hover": { backgroundColor: "rgba(58, 151, 240, 0.3)" } }}>
+                            User Name (Lo-Hi)
+                        </MenuItem>
+                    </Menu>
                     <Box sx={{ flexGrow: 1 }}/>
                     <Box>
                         <Typography variant="h5" component="h3" sx={{ fontWeight: 500 }}>
@@ -59,9 +127,11 @@ const PlaylistsScreen = () => {
                     </Box>
                 </Box>
                 <Box sx={{ display: "flex", flexDirection: "column", height: "70%", marginTop: "50px", overflow: "auto" }}>
-                    <PlaylistCard />
+                    {store.idNamePairs.map(pair => {
+                        return <PlaylistCard key={pair.id} pair={pair}/>
+                    })}
                 </Box>
-                <Button variant="contained" onClick={null}
+                <Button variant="contained" onClick={handleCreateNewPlaylist}
                 sx={{ width: "fit-content", height: "37px", marginTop: "57px", backgroundColor: "#2C2C2C", textTransform: "none", borderRadius: "100px" }}>
                     <AddCircleOutlineIcon sx={{ marginRight: "5px" }}/>
                     New Playlist

@@ -78,7 +78,7 @@ class UserController {
         } catch(err) {
             console.log(err.message);
             return res.status(500).json({
-                errorMessage: err
+                errorMessage: err.message
             });
         }
     }
