@@ -57,7 +57,7 @@ const EditAccountScreen = () => {
     }
 
     return (
-        <Box className="screen" sx={{ height: "77vh", border: "1px solid, black" }}>
+        <Box className="screen" sx={{ height: "77vh", border: "1px solid black" }}>
             <Box 
             sx={{ marginTop: "-25px", position: "relative", top: 210, left: 210, display: "flex", flexDirection: "column", alignItems: "center", width: "fit-content", justifyContent: "center" }}>
                 <Avatar src={avatarInput} sx={{ width: 50, height: 50 }}/>
@@ -75,10 +75,10 @@ const EditAccountScreen = () => {
                     </Typography>
                 </Box>
                 <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px" }}>
-                    <ClearableTextField value={userNameInput} label="User Name" setInputValue={setUserNameInput}/>
-                    <ClearableTextField value={emailInput} label="Email" setInputValue={setEmailInput}/>
-                    <ClearableTextField value={passwordInput} label="Password" type="password" setInputValue={setPasswordInput}/>
-                    <ClearableTextField value={passwordConfirmInput} label="Password Confirm" type="password" setInputValue={setPasswordConfirmInput}/>
+                    <ClearableTextField value={userNameInput} label="User Name" setInputValue={setUserNameInput} setWidth={525} setRequired={true}/>
+                    <ClearableTextField value={emailInput} label="Email" setInputValue={setEmailInput} setWidth={525} setRequired={true}/>
+                    <ClearableTextField value={passwordInput} label="Password" type="password" setInputValue={setPasswordInput} setWidth={525} setRequired={true}/>
+                    <ClearableTextField value={passwordConfirmInput} label="Password Confirm" type="password" setInputValue={setPasswordConfirmInput} setWidth={525} setRequired={true}/>
                 </Box>
                 <Box sx={{ display: "flex", gap: "20px" }}>
                     <Button variant="contained" onClick={handleConfirmAccountEdit}

@@ -7,6 +7,7 @@ import WelcomeScreen from './screens/WelcomeScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import SignInScreen from './screens/SignInScreen';
 import EditAccountScreen from './screens/EditAccountScreen';
+import PlaylistsScreen from './screens/PlaylistsScreen';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
               <Route path="/register" element={<RegisterScreen />} />
               <Route path="/login" element={<SignInScreen />} />
               <Route path="/editAccount" element={<EditAccountScreen />} />
+              <Route path="/playlists" element={<PlaylistsScreen />} />
             </Routes>
           </Container>
         </GlobalStoreContextProvider>

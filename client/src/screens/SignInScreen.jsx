@@ -24,7 +24,7 @@ const SignInScreen = () => {
     }
 
     return (
-        <Box className="screen" sx={{ height: "77vh", border: "1px solid, black" }}>
+        <Box className="screen" sx={{ height: "77vh", border: "1px solid black" }}>
             <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%" }}>
                 <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
                     <LockOutlineIcon sx={{ fontSize: "55px", marginBottom: "5px" }}/>
@@ -33,8 +33,8 @@ const SignInScreen = () => {
                     </Typography>
                 </Box>
                 <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "20px" }}>
-                    <ClearableTextField value={emailInput} label="Email" setInputValue={setEmailInput}/>
-                    <ClearableTextField value={passwordInput} label="Password" type="password" setInputValue={setPasswordInput}/>
+                    <ClearableTextField value={emailInput} label="Email" setInputValue={setEmailInput} setWidth={525} setRequired={true}/>
+                    <ClearableTextField value={passwordInput} label="Password" type="password" setInputValue={setPasswordInput} setWidth={525} setRequired={true}/>
                 </Box>
                 <Button variant="contained" onClick={handleSignIn}
                 sx={{ width: "525px", height: "37px", marginTop: "40px", backgroundColor: "#2C2C2C", textTransform: "none" }}>
