@@ -6,6 +6,7 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { useState, useContext } from 'react';
 import GlobalStoreContext from '../store/GlobalStoreContextProvider';
 import ClearableTextField from '../components/ClearableTextField';
+import PlaylistCard from '../components/PlaylistCard';
 
 const PlaylistsScreen = () => {
     const { store } = useContext(GlobalStoreContext);
@@ -57,8 +58,8 @@ const PlaylistsScreen = () => {
                         </Typography>
                     </Box>
                 </Box>
-                <Box sx={{ display: "flex", flexDirection: "column", height: "70%", marginTop: "50px" }}>
-                    TODO
+                <Box sx={{ display: "flex", flexDirection: "column", height: "70%", marginTop: "50px", overflow: "auto" }}>
+                    <PlaylistCard />
                 </Box>
                 <Button variant="contained" onClick={null}
                 sx={{ width: "fit-content", height: "37px", marginTop: "57px", backgroundColor: "#2C2C2C", textTransform: "none", borderRadius: "100px" }}>
