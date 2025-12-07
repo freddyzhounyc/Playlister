@@ -3,10 +3,10 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from '@mui/icons-material/Close';
 import InputAdornment from "@mui/material/InputAdornment";
 
-const ClearableTextField = ({ value, label, type, setInputValue }) => {
+const ClearableTextField = ({ value, label, type, setInputValue, setWidth, setRequired }) => {
     return (
-        <TextField required value={value} label={label} variant="filled" type={type} onChange={(event) => setInputValue(event.target.value)} 
-        sx={{ width: "525px" }} 
+        <TextField required={setRequired} value={value} label={label} variant="filled" type={type} onChange={(event) => setInputValue(event.target.value)} 
+        sx={{ width: setWidth + "px" }} 
         slotProps={{
             input: {
                 endAdornment: (
