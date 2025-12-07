@@ -1,5 +1,6 @@
 const serverStoreUrl = "http://localhost:4000/api";
 
+// User Controller
 export const updateUser = async (id, profileImage, userName, email, password, passwordVerify) => {
     const response = await fetch(serverStoreUrl + "/user/" + id, {
         method: "PUT",
@@ -18,6 +19,7 @@ export const updateUser = async (id, profileImage, userName, email, password, pa
     return response;
 }
 
+// Playlist Controller
 export const createPlaylist = async (newListName, ownerId) => {
     const response = await fetch(serverStoreUrl + "/playlist", {
         method: "POST",
@@ -29,6 +31,20 @@ export const createPlaylist = async (newListName, ownerId) => {
             name: newListName,
             ownerId: ownerId
         })
+    });
+    return response;
+}
+export const getPlaylistById = async (playlistId) => {
+    const response = await fetch(serverStoreUrl + "/playlist/" + playlistId, {
+        method: "GET",
+        credentials: "include"
+    })
+    return response;
+}
+export const getAllPlaylistsByName = async (name) => {
+    const response = await fetch(serverStoreUrl + "/playlists?" + "name=" + name, {
+        method: "GET",
+        credentials: "include"
     });
     return response;
 }
@@ -47,10 +63,32 @@ export const getUserByPlaylistId = async (playlistId) => {
     return response;
 }
 
+// PlaylistSong Controller
+export const getSongsInPlaylist = async (playlistId) => {
+    const response = await fetch(serverStoreUrl + "/songsInPlaylist/" + playlistId, {
+        method: "GET",
+        credentials: "include"
+    });
+    return response;
+}
+
+// Song Controller
+export const getSongById = async (songId) => {
+    const response = await fetch(serverStoreUrl + "/song/" + songId, {
+        method: "GET",
+        credentials: "include"
+    });
+    return response;
+}
+
 const apis = {
     updateUser,
     createPlaylist,
+    getPlaylistById,
+    getAllPlaylistsByName,
     getPlaylistPairs,
-    getUserByPlaylistId
+    getUserByPlaylistId,
+    getSongsInPlaylist,
+    getSongById
 }
 export default apis;

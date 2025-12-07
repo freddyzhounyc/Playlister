@@ -31,7 +31,27 @@ class PlaylistController {
             console.log(err);
             return res.status(500).json({
                 success: false,
-                error: err.message
+                errorMessage: err.message
+            });
+        }
+    }
+    getPlaylistById = async (req, res) => {
+        try {
+            const list = await this.databaseManager.readOneById(this.playlist, req.params.id);
+            
+            return res.status(200).json({
+                success: true,
+                playlist: {
+                    id: list.id,
+                    name: list.name,
+                    ownerId: list.ownerId
+                }
+            })
+        } catch (err) {
+            console.log(err);
+            return res.status(500).json({
+                success: false,
+                errorMessage: err.message
             });
         }
     }
@@ -62,6 +82,30 @@ class PlaylistController {
         } catch (err) {
             console.log(err.message);
             return res.status(500).json({
+                success: false,
+                errorMessage: err.message
+            });
+        }
+    }
+    getPlaylists = async (req, res) => {
+        try {
+            const { name, ownerId } = req.query;
+            let criteria = {};
+            if (name)
+                criteria = {...criteria, name: name}
+            if (ownerId)
+                criteria = {...criteria, ownerId: ownerId}
+
+            const playlists = await this.databaseManager.readAll(this.playlist, criteria);
+
+            return res.status(200).json({
+                success: true,
+                playlists: playlists
+            });
+        } catch (err) {
+            console.log(err.message);
+            return res.status(500).json({
+                success: false,
                 errorMessage: err.message
             });
         }
@@ -84,6 +128,7 @@ class PlaylistController {
         } catch (err) {
             console.log(err.message);
             return res.status(500).json({
+                success: false,
                 errorMessage: err.message
             });
         }
@@ -91,5 +136,5 @@ class PlaylistController {
 
 }
 const postgresDBManager = new PostgresDBManager();
-const userController = new PlaylistController(postgresDBManager, Playlist, User);
-module.exports = userController;
+const playlistController = new PlaylistController(postgresDBManager, Playlist, User);
+module.exports = playlistController;

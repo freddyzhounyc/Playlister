@@ -16,7 +16,8 @@ export const GlobalStoreActionType = {
     SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE",
     EDIT_SONG: "EDIT_SONG",
     REMOVE_SONG: "REMOVE_SONG",
-    HIDE_MODALS: "HIDE_MODALS"
+    HIDE_MODALS: "HIDE_MODALS",
+    INCREMENT_NEW_LIST_COUNTER: "INCREMENT_NEW_LIST_COUNTER"
 }
 
 const CurrentModal = {
@@ -35,7 +36,7 @@ function GlobalStoreContextProvider(props) {
         currentList: null, // List currently being edited
         currentSongIndex : -1,
         currentSong : null, // Song currently being edited
-        newListCounter: 0, // ** Possibly don't need **
+        newListCounter: 0,
         listNameActive: false, // * Possibly don't need **
         listIdMarkedForDeletion: null,
         listMarkedForDeletion: null
@@ -66,7 +67,7 @@ function GlobalStoreContextProvider(props) {
                     currentList: null,
                     currentSongIndex: -1,
                     currentSong: null,
-                    newListCounter: store.newListCounter,
+                    newListCounter: store.newListCounter + 1,
                     listNameActive: false,
                     listIdMarkedForDeletion: null,
                     listMarkedForDeletion: null
@@ -84,6 +85,12 @@ function GlobalStoreContextProvider(props) {
                     listIdMarkedForDeletion: null,
                     listMarkedForDeletion: null
                 })
+            }
+            case GlobalStoreActionType.INCREMENT_NEW_LIST_COUNTER: {
+                return setStore({
+                    ...store,
+                    newListCounter: store.newListCounter + 1
+                });
             }
             default:
                 return store;
@@ -113,7 +120,17 @@ function GlobalStoreContextProvider(props) {
         }
     }
     store.createNewList = async () => {
-        let newListName = "Untitled" + store.newListCounter;
+        let counter = 0;
+        let newListName = "Untitled" + counter;
+        let playlistsWithSelectedNewName = [];
+        do {
+            const response = await storeRequestSender.getAllPlaylistsByName(newListName);
+            const data = await response.json();
+            playlistsWithSelectedNewName = data.playlists;
+            if (playlistsWithSelectedNewName.length > 0)
+                counter++;
+            newListName = "Untitled" + counter;
+        } while (playlistsWithSelectedNewName.length > 0);
         const response = await storeRequestSender.createPlaylist(newListName, auth.user.userId);
         const data = await response.json();
 
@@ -145,6 +162,44 @@ function GlobalStoreContextProvider(props) {
             const data = await response.json();
             if (data.success)
                 return data.user; // No call to reducer because this is just a helper method (no state change)
+            else
+                throw new Error("Failed to get User by Playlist ID");
+        } catch (err) {
+            console.log(err.message);
+        }
+    }
+    // TO-DO
+    // store.duplicatePlaylist = async (playlistId) => {
+    //     try {
+    //         const response = await storeRequestSender.getPlaylistById(playlistId);
+    //         const data = await response.json();
+    //         if (data.success) {
+    //             const list = data.playlist;
+    //             let duplicateList = {
+    //                 name: list.name,
+    //                 ownerId: list.ownerId
+    //             }
+    //         }
+    //     }
+    // }
+    store.getSongsInPlaylist = async (playlistId) => {
+        try {
+            const response = await storeRequestSender.getSongsInPlaylist(playlistId);
+            const data = await response.json();
+            if (data.success)
+                return data.songIds;
+            else
+                throw new Error("Failed to get Songs in a particular playlist.");
+        } catch (err) {
+            console.log(err);
+        }
+    }
+    store.getSongById = async (songId) => {
+        try {
+            const response = await storeRequestSender.getSongById(songId);
+            const data = await response.json();
+            if (data.success)
+                return data.song; // No call to reducer because this is just a helper method (no state change)
             else
                 throw new Error("Failed to get User by Playlist ID");
         } catch (err) {

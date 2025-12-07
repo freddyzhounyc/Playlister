@@ -18,17 +18,39 @@ const PlaylistCard = ({ pair }) => {
         email: "email",
         userId: -1
     });
+    const [songList, setSongList] = useState([]);
 
     useEffect(() => {
         const getUser = async () => {
             const user = await handleGetUserByPlaylistId(pair.id);
             setUser(user);
+            const songIdsList = await store.getSongsInPlaylist(pair.id);
+            const songList = await handleSongIdsListToSongsList(songIdsList);
+            setSongList(songList);
         }
         getUser();
     }, []);
 
     const handleButtonPress = (event) => {
         event.stopPropagation();
+    }
+    const handleSongIdsListToSongsList = async (songsIdsList) => {
+        const result = [];
+        for (let i = 0; i < songsIdsList.length; i++) {
+            const song = await handleGetSongById(songsIdsList[i]);
+            result.push({
+                id: song.id,
+                title: song.title,
+                artist: song.artist,
+                year: song.year,
+                youTubeId: song.youTubeId
+            });
+        }
+        return result;
+    }
+    const handleGetSongById = async (songId) => {
+        const song = await store.getSongById(songId);
+        return song;
     }
     const handleGetUserByPlaylistId = async (playlistId) => {
         const user = await store.getUserByPlaylistId(playlistId);
@@ -72,7 +94,13 @@ const PlaylistCard = ({ pair }) => {
                 </Paper>
             </AccordionSummary>
             <AccordionDetails>
-
+                {songList.map((song, index) => {
+                    return (
+                        <Typography key={index}>
+                            {index + 1 + ". " + song.title + " by " + song.artist + " (" + song.year + ")"}
+                        </Typography>
+                    )
+                })}
             </AccordionDetails>
         </Accordion>
     )
