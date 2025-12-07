@@ -10,6 +10,7 @@ import { useState, useContext, useEffect } from 'react';
 import GlobalStoreContext from '../store/GlobalStoreContextProvider';
 import ClearableTextField from '../components/ClearableTextField';
 import PlaylistCard from '../components/PlaylistCard';
+import PlayPlaylistModal from '../components/PlayPlaylistModal';
 
 const PlaylistsScreen = () => {
     const { store } = useContext(GlobalStoreContext);
@@ -46,6 +47,10 @@ const PlaylistsScreen = () => {
         await store.createNewList();
         await store.loadIdNamePairs();
     }
+
+    let playPlaylistModal = "";
+    if (store.currentModal === "PLAY_PLAYLIST_MODAL")
+        playPlaylistModal = <PlayPlaylistModal />
 
     return (
         <Box className="screen"
@@ -137,6 +142,7 @@ const PlaylistsScreen = () => {
                     New Playlist
                 </Button>
             </Box>
+            { playPlaylistModal }
         </Box>
     )
 }

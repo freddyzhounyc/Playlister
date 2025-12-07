@@ -17,20 +17,22 @@ export const GlobalStoreActionType = {
     EDIT_SONG: "EDIT_SONG",
     REMOVE_SONG: "REMOVE_SONG",
     HIDE_MODALS: "HIDE_MODALS",
-    INCREMENT_NEW_LIST_COUNTER: "INCREMENT_NEW_LIST_COUNTER"
+    INCREMENT_NEW_LIST_COUNTER: "INCREMENT_NEW_LIST_COUNTER",
+    PLAY_PLAYLIST: "PLAY_PLAYLIST"
 }
 
 const CurrentModal = {
     NONE : "NONE",
     DELETE_LIST : "DELETE_LIST",
     EDIT_SONG : "EDIT_SONG",
+    PLAY_PLAYLIST_MODAL: "PLAY_PLAYLIST_MODAL",
     ERROR : "ERROR"
 }
 
 function GlobalStoreContextProvider(props) {
     const { auth } = useContext(AuthContext);
     const [store, setStore] = useState({
-        currentModal : CurrentModal.NONE,
+        currentModal: CurrentModal.NONE,
         idNamePairs: [],
         currentPlayingList: null,
         currentList: null, // List currently being edited
@@ -48,7 +50,7 @@ function GlobalStoreContextProvider(props) {
         switch (type) {
             case GlobalStoreActionType.UPDATE_USER: {
                 return setStore({
-                    currentModal : CurrentModal.NONE,
+                    currentModal: CurrentModal.NONE,
                     idNamePairs: store.idNamePairs,
                     currentPlayingList: store.currentPlayingList,
                     currentList: store.currentList,
@@ -62,12 +64,13 @@ function GlobalStoreContextProvider(props) {
             }
             case GlobalStoreActionType.LOAD_ID_NAME_PAIRS: {
                 return setStore({
-                    currentModal : CurrentModal.NONE,
+                    currentModal: CurrentModal.NONE,
                     idNamePairs: payload,
+                    currentPlayingList: store.currentPlayingList,
                     currentList: null,
                     currentSongIndex: -1,
                     currentSong: null,
-                    newListCounter: store.newListCounter + 1,
+                    newListCounter: store.newListCounter,
                     listNameActive: false,
                     listIdMarkedForDeletion: null,
                     listMarkedForDeletion: null
@@ -75,8 +78,9 @@ function GlobalStoreContextProvider(props) {
             }
             case GlobalStoreActionType.CREATE_NEW_LIST: {                
                 return setStore({
-                    currentModal : CurrentModal.NONE,
+                    currentModal: CurrentModal.NONE,
                     idNamePairs: store.idNamePairs,
+                    currentPlayingList: store.currentPlayingList,
                     currentList: store.currentList,
                     currentSongIndex: -1,
                     currentSong: null,
@@ -90,6 +94,27 @@ function GlobalStoreContextProvider(props) {
                 return setStore({
                     ...store,
                     newListCounter: store.newListCounter + 1
+                });
+            }
+            case GlobalStoreActionType.PLAY_PLAYLIST: {
+                return setStore({
+                    ...store,
+                    currentModal: CurrentModal.PLAY_PLAYLIST_MODAL,
+                    currentPlayingList: payload.playlist,
+                });
+            }
+            case GlobalStoreActionType.HIDE_MODALS: {
+                return setStore({
+                    currentModal : CurrentModal.NONE,
+                    idNamePairs: store.idNamePairs,
+                    currentPlayingList: store.currentPlayingList,
+                    currentList: store.currentList,
+                    currentSongIndex: -1,
+                    currentSong: null,
+                    newListCounter: store.newListCounter,
+                    listNameActive: false,
+                    listIdMarkedForDeletion: null,
+                    listMarkedForDeletion: null
                 });
             }
             default:
@@ -205,6 +230,31 @@ function GlobalStoreContextProvider(props) {
         } catch (err) {
             console.log(err.message);
         }
+    }
+
+    // Showing Modals
+    store.showPlayPlaylistModal = async (playlistId) => {
+        try {
+            const response = await storeRequestSender.getPlaylistById(playlistId);
+            const data = await response.json();
+            if (data.success) {
+                storeReducer({
+                    type: GlobalStoreActionType.PLAY_PLAYLIST,
+                    payload: {playlist: data.playlist}
+                });
+            } else
+                throw new Error("Failed to play playlist!");
+        } catch (err) {
+            console.log(err.message);
+        }
+    }
+    
+    store.hideModals = () => {
+        auth.errorMessage = null;
+        storeReducer({
+            type: GlobalStoreActionType.HIDE_MODALS,
+            payload: {}
+        });
     }
 
     return (

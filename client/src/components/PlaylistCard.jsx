@@ -57,6 +57,11 @@ const PlaylistCard = ({ pair }) => {
         return user;
     }
 
+    const handlePlayPlaylist = (event) => {
+        event.stopPropagation();
+        store.showPlayPlaylistModal(pair.id);
+    }
+
     return (
         <Accordion sx={{ marginBottom: "20px", width: "100%" }}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -74,7 +79,7 @@ const PlaylistCard = ({ pair }) => {
                     </Box>
                     <Box sx={{ flexGrow: 1 }} />
                     <Box sx={{ display: "flex", flexDirection: "row-reverse", gap: "3px" }}>
-                        <Button variant="contained" onClick={handleButtonPress} size="small"
+                        <Button variant="contained" onClick={handlePlayPlaylist} size="small"
                         sx={{ fontSize: "13px", width: "fit-content", height: "30px", marginTop: "10px", marginRight: "0px", backgroundColor: "#DE24BC", textTransform: "none", borderRadius: "7px", border: "1px solid black" }}>
                             Play
                         </Button>
