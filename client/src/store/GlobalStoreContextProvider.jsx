@@ -59,6 +59,32 @@ function GlobalStoreContextProvider(props) {
                     listMarkedForDeletion: store.listMarkedForDeletion
                 });
             }
+            case GlobalStoreActionType.LOAD_ID_NAME_PAIRS: {
+                return setStore({
+                    currentModal : CurrentModal.NONE,
+                    idNamePairs: payload,
+                    currentList: null,
+                    currentSongIndex: -1,
+                    currentSong: null,
+                    newListCounter: store.newListCounter,
+                    listNameActive: false,
+                    listIdMarkedForDeletion: null,
+                    listMarkedForDeletion: null
+                });
+            }
+            case GlobalStoreActionType.CREATE_NEW_LIST: {                
+                return setStore({
+                    currentModal : CurrentModal.NONE,
+                    idNamePairs: store.idNamePairs,
+                    currentList: store.currentList,
+                    currentSongIndex: -1,
+                    currentSong: null,
+                    newListCounter: store.newListCounter + 1,
+                    listNameActive: false,
+                    listIdMarkedForDeletion: null,
+                    listMarkedForDeletion: null
+                })
+            }
             default:
                 return store;
         }
@@ -84,6 +110,45 @@ function GlobalStoreContextProvider(props) {
                 payload: null
             });
             auth.updateUser(null, err.message);
+        }
+    }
+    store.createNewList = async () => {
+        let newListName = "Untitled" + store.newListCounter;
+        const response = await storeRequestSender.createPlaylist(newListName, auth.user.userId);
+        const data = await response.json();
+
+        if (data.status === 201) {
+            storeReducer({
+                type: GlobalStoreActionType.CREATE_NEW_LIST,
+                payload: data.playlist
+            });
+        }
+    }
+    store.loadIdNamePairs = async () => {
+        try {
+            const response = await storeRequestSender.getPlaylistPairs();
+            const data = await response.json();
+            if (data.success) {
+                storeReducer({
+                    type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
+                    payload: data.idNamePairs
+                });
+            } else
+                throw new Error("FAILED TO GET THE LIST PAIRS");
+        } catch (err) {
+            console.log(err.message);
+        }
+    }
+    store.getUserByPlaylistId = async (playlistId) => {
+        try {
+            const response = await storeRequestSender.getUserByPlaylistId(playlistId);
+            const data = await response.json();
+            if (data.success)
+                return data.user; // No call to reducer because this is just a helper method (no state change)
+            else
+                throw new Error("Failed to get User by Playlist ID");
+        } catch (err) {
+            console.log(err.message);
         }
     }
 
