@@ -21,6 +21,16 @@ Playlist.belongsTo(User, {
     as: "owner"
 });
 
+User.hasMany(Song, {
+    foreignKey: "ownerId",
+    as: "songs",
+    onDelete: "CASCADE"
+})
+Song.belongsTo(User, {
+    foreignKey: "ownerId",
+    as: "owner"
+})
+
 Playlist.belongsToMany(Song, {
     through: PlaylistSong,
     foreignKey: "playlistId",

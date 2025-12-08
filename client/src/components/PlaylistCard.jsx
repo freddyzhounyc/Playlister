@@ -37,14 +37,17 @@ const PlaylistCard = ({ pair }) => {
     const handleSongIdsListToSongsList = async (songsIdsList) => {
         const result = [];
         for (let i = 0; i < songsIdsList.length; i++) {
-            const song = await handleGetSongById(songsIdsList[i]);
-            result.push({
-                id: song.id,
-                title: song.title,
-                artist: song.artist,
-                year: song.year,
-                youTubeId: song.youTubeId
-            });
+            if (songsIdsList[i]) {
+                const song = await handleGetSongById(songsIdsList[i]);
+                result.push({
+                    id: song.id,
+                    title: song.title,
+                    artist: song.artist,
+                    year: song.year,
+                    youTubeId: song.youTubeId,
+                    ownerId: song.ownerId
+                });
+            }
         }
         return result;
     }

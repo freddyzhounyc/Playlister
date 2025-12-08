@@ -114,7 +114,8 @@ export const createSong = async (newSong) => {
             title: newSong.title,
             artist: newSong.artist,
             year: newSong.year,
-            youTubeId: newSong.youTubeId
+            youTubeId: newSong.youTubeId,
+            ownerId: newSong.ownerId
         })
     });
     return response;
@@ -133,6 +134,19 @@ export const getSongById = async (songId) => {
     });
     return response;
 }
+export const deleteSongById = async (songId, playlistId) => {
+    const response = await fetch(serverStoreUrl + "/song/" + songId, {
+        method: "DELETE",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ // Needed for backend
+            playlistId: playlistId
+        })
+    });
+    return response;
+}
 
 const apis = {
     updateUser,
@@ -146,6 +160,7 @@ const apis = {
     getSongsInPlaylist,
     createSong,
     getAllSongsByTitle,
-    getSongById
+    getSongById,
+    deleteSongById
 }
 export default apis;
