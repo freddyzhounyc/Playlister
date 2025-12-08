@@ -20,6 +20,7 @@ class SongController {
             return res.status(201).json({
                 success: true,
                 song: {
+                    id: song.id,
                     title: song.title,
                     artist: song.artist,
                     year: song.year,
@@ -48,6 +49,31 @@ class SongController {
                     youTubeId: song.youTubeId
                 }
             })
+        } catch (err) {
+            console.log(err);
+            return res.status(500).json({
+                success: false,
+                errorMessage: err.message
+            });
+        }
+    }
+    getSongs = async (req, res) => {
+        try {
+            const { title, artist, year } = req.query;
+            let criteria = {}
+            if (title)
+                criteria = {...criteria, title: title}
+            if (artist)
+                criteria = {...criteria, artist: artist}
+            if (year)
+                criteria = {...criteria, year: year}
+
+            const songs = await this.databaseManager.readAll(this.song, criteria);
+
+            return res.status(200).json({
+                success: true,
+                songs: songs
+            });
         } catch (err) {
             console.log(err);
             return res.status(500).json({

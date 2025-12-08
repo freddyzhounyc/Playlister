@@ -79,6 +79,21 @@ export const updatePlaylistNameById = async (id, playlist) => {
 }
 
 // PlaylistSong Controller
+export const createPlaylistSong = async (playlistSong) => {
+    const response = await fetch(serverStoreUrl + "/playlistSong", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            playlistId: playlistSong.playlistId,
+            songId: playlistSong.songId,
+            order: playlistSong.order
+        })
+    });
+    return response;
+}
 export const getSongsInPlaylist = async (playlistId) => {
     const response = await fetch(serverStoreUrl + "/songsInPlaylist/" + playlistId, {
         method: "GET",
@@ -88,6 +103,29 @@ export const getSongsInPlaylist = async (playlistId) => {
 }
 
 // Song Controller
+export const createSong = async (newSong) => {
+    const response = await fetch(serverStoreUrl + "/song", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            title: newSong.title,
+            artist: newSong.artist,
+            year: newSong.year,
+            youTubeId: newSong.youTubeId
+        })
+    });
+    return response;
+}
+export const getAllSongsByTitle = async (title) => {
+    const response = await fetch(serverStoreUrl + "/songs?" + "title=" + title, {
+        method: "GET",
+        credentials: "include"
+    });
+    return response;
+}
 export const getSongById = async (songId) => {
     const response = await fetch(serverStoreUrl + "/song/" + songId, {
         method: "GET",
@@ -104,7 +142,10 @@ const apis = {
     getPlaylistPairs,
     getUserByPlaylistId,
     updatePlaylistNameById,
+    createPlaylistSong,
     getSongsInPlaylist,
+    createSong,
+    getAllSongsByTitle,
     getSongById
 }
 export default apis;
