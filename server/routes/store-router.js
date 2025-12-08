@@ -15,6 +15,7 @@ router.get("/userByPlaylistId/:id", PlaylistController.getUserByPlaylistId); // 
 router.post("/playlist", auth.verify, PlaylistController.createPlaylist);
 router.get("/playlist/:id", PlaylistController.getPlaylistById) // Public Endpoint
 router.get("/playlists", PlaylistController.getPlaylists) // Public Endpoint
+router.put("/playlist/:id", auth.verify, PlaylistController.updatePlaylistName);
 
 // PlaylistSong Controller
 router.get("/songsInPlaylist/:id", PlaylistSongController.getSongsInPlaylist) // Public Endpoint

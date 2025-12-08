@@ -133,6 +133,46 @@ class PlaylistController {
             });
         }
     }
+    updatePlaylistName = async (req, res) => {
+        try {
+            const body = req.body;
+            if (!body)
+                return res.status(400).json({
+                    success: false,
+                    errorMessage: "Provide a body to update playlist!"
+                });
+
+            const list = await this.databaseManager.readOneById(this.playlist, req.params.id);
+            const user = await this.databaseManager.readOne(this.user, { id: list.ownerId });
+            console.log(user.id + " " + req.userId)
+            if (user.id != req.userId)
+                return res.status(400).json({
+                    success: false,
+                    errorMessage: "You can only update your own playlists!"
+                });
+            
+            const newListToUpdateTo = {
+                id: list.id,
+                name: body.playlist.name,
+            }
+            const updatedPlaylist = await this.databaseManager.save(this.playlist, newListToUpdateTo); // Update
+
+            return res.status(200).json({
+                success: true,
+                playlist: {
+                    id: updatedPlaylist.id,
+                    name: updatedPlaylist.name,
+                    ownerId: updatedPlaylist.ownerId
+                }
+            });
+        } catch (err) {
+            console.log(err.message);
+            return res.status(500).json({
+                success: false,
+                errorMessage: err.message
+            });
+        }
+    }
 
 }
 const postgresDBManager = new PostgresDBManager();

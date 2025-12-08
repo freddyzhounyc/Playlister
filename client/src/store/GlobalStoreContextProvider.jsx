@@ -20,7 +20,8 @@ export const GlobalStoreActionType = {
     HIDE_MODALS: "HIDE_MODALS",
     INCREMENT_NEW_LIST_COUNTER: "INCREMENT_NEW_LIST_COUNTER",
     PLAY_PLAYLIST: "PLAY_PLAYLIST",
-    EDIT_PLAYLIST: "EDIT_PLAYLIST"
+    EDIT_PLAYLIST: "EDIT_PLAYLIST",
+    UPDATE_CURRENT_LIST_NAME: "UPDATE_CURRENT_LIST_NAME"
 }
 
 const tps = new jsTPS();
@@ -127,6 +128,13 @@ function GlobalStoreContextProvider(props) {
                     ...store,
                     currentModal: CurrentModal.EDIT_PLAYLIST_MODAL,
                     currentList: payload.playlist
+                });
+            }
+            case GlobalStoreActionType.UPDATE_CURRENT_LIST_NAME: {
+                return setStore({
+                    ...store,
+                    currentModal: CurrentModal.NONE,
+                    currentList: null,
                 });
             }
             default:
@@ -282,6 +290,26 @@ function GlobalStoreContextProvider(props) {
             type: GlobalStoreActionType.HIDE_MODALS,
             payload: {}
         });
+    }
+
+    store.updateCurrentListName = async (newPlaylistName) => {
+        try {
+            if (!store.currentList.id)
+                throw new Error("No current list being edited!");
+
+            let playlist = store.currentList;
+            playlist.name = newPlaylistName;
+            const response = await storeRequestSender.updatePlaylistNameById(store.currentList.id, playlist);
+            const data = await response.json();
+            if (data.success) {
+                storeReducer({
+                    type: GlobalStoreActionType.UPDATE_CURRENT_LIST_NAME,
+                    payload: null
+                })
+            }
+        } catch (err) {
+            console.log(err.message);
+        }
     }
 
     return (
