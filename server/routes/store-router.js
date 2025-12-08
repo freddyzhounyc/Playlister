@@ -24,5 +24,6 @@ router.post("/playlistSong", auth.verify, PlaylistSongController.createPlaylistS
 // Song Controller
 router.post("/song", auth.verify, SongController.createSong);
 router.get("/song/:id", auth.verify, SongController.getSongById);
+router.get("/songs", SongController.getSongs); // Public Endpoint
 
 module.exports = router;

@@ -21,15 +21,16 @@ const EditPlaylistModal = () => {
         year: 2000,
         youTubeId: "rgV4KRVUnN4"
     }]);
+    const [dupClicked, setDupClicked] = useState(0);
 
     useEffect(() => {
-        const getSongsList = async () => {
-            const songIdsList = await store.getSongsInPlaylist(store.currentList.id);
-            const songList = await handleSongIdsListToSongsList(songIdsList);
-            setSongList(songList);
-        }
         getSongsList();
-    }, []);
+    }, [dupClicked]);
+    const getSongsList = async () => {
+        const songIdsList = await store.getSongsInPlaylist(store.currentList.id);
+        const songList = await handleSongIdsListToSongsList(songIdsList);
+        setSongList(songList);
+    }
     const handleGetSongById = async (songId) => {
         const song = await store.getSongById(songId);
         return song;
@@ -52,6 +53,12 @@ const EditPlaylistModal = () => {
     const handleEditPlaylistModalClose = async () => {
         await store.updateCurrentListName(playlistNameInput);
         store.loadIdNamePairs();
+    }
+
+    const handleDuplicateSong = async (song) => {
+        await store.duplicateSong(store.currentList.id, song);
+        await getSongsList();
+        setDupClicked(dupClicked + 1);
     }
 
     return (
@@ -77,7 +84,7 @@ const EditPlaylistModal = () => {
                         </Box>
                         <Box sx={{ display: "flex", flexDirection: "column", width: "100%", height: "75%", marginTop: "10px", backgroundColor: "white", borderRadius: "10px", overflow: "auto" }}>
                             {songList.map((song, index) => {
-                                return <EditPlaylistModalSongCard key={index} song={song} num={index+1} />
+                                return <EditPlaylistModalSongCard key={index} song={song} num={index+1} handleDuplicateSong={handleDuplicateSong} />
                             })}
                         </Box>
                         <Box sx={{ display: "flex", marginTop: "15px", width: "100%" }}>

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { jsTPS } from "jstps";
 import AuthContext from '../auth/AuthContextProvider';
 import storeRequestSender from './requests/index';
+import CreateSong_Transaction from '../transactions/CreateSong_Transaction';
 
 export const GlobalStoreContext = createContext({});
 
@@ -21,7 +22,8 @@ export const GlobalStoreActionType = {
     INCREMENT_NEW_LIST_COUNTER: "INCREMENT_NEW_LIST_COUNTER",
     PLAY_PLAYLIST: "PLAY_PLAYLIST",
     EDIT_PLAYLIST: "EDIT_PLAYLIST",
-    UPDATE_CURRENT_LIST_NAME: "UPDATE_CURRENT_LIST_NAME"
+    UPDATE_CURRENT_LIST_NAME: "UPDATE_CURRENT_LIST_NAME",
+    CREATE_SONG: "CREATE_SONG"
 }
 
 const tps = new jsTPS();
@@ -73,7 +75,7 @@ function GlobalStoreContextProvider(props) {
                     currentModal: CurrentModal.NONE,
                     idNamePairs: payload,
                     currentPlayingList: store.currentPlayingList,
-                    currentList: null,
+                    currentList: store.currentList,
                     currentSongIndex: -1,
                     currentSong: null,
                     newListCounter: store.newListCounter,
@@ -135,6 +137,13 @@ function GlobalStoreContextProvider(props) {
                     ...store,
                     currentModal: CurrentModal.NONE,
                     currentList: null,
+                });
+            }
+            case GlobalStoreActionType.CREATE_SONG: {
+                return setStore({
+                    ...store,
+                    currentList: payload.newCurrentList, // Really just store.currentList
+                    newListCounter: store.newListCounter + 1
                 });
             }
             default:
@@ -310,6 +319,56 @@ function GlobalStoreContextProvider(props) {
         } catch (err) {
             console.log(err.message);
         }
+    }
+
+    store.addCreateSongTransaction = async (playlistId, title, artist, year, youTubeId) => {
+        let song = {
+            title: title,
+            artist: artist,
+            year: year,
+            youTubeId: youTubeId
+        }
+        const songs = await store.getSongsInPlaylist(playlistId);
+        let transaction = new CreateSong_Transaction(store, songs.length, song, playlistId);
+        tps.processTransaction(transaction);
+    }
+    store.createSong = async (index, song, playlistId) => {
+        try {
+            const order = index;
+            const newSong = {
+                title: song.title,
+                artist: song.artist,
+                year: song.year,
+                youTubeId: song.youTubeId
+            }
+            const songResponse = await storeRequestSender.createSong(newSong);
+            const songData = await songResponse.json();
+
+            if (songData.success) {
+                const response = await storeRequestSender.createPlaylistSong({
+                    playlistId: playlistId,
+                    songId: songData.song.id,
+                    order: order
+                });
+                const data = await response.json();
+                if (data.success) {
+                    storeReducer({
+                        type: GlobalStoreActionType.CREATE_SONG,
+                        payload: {
+                            newCurrentList: {
+                                ...store.currentList,
+                                name: store.currentList.name
+                            }
+                        }
+                    })
+                }
+            }
+        } catch (err) {
+            console.log(err.message);
+        }
+    }
+    store.duplicateSong = async (playlistId, song) => {
+        await store.addCreateSongTransaction(playlistId, song.title + " (Copy)", song.artist, song.year, song.youTubeId);
     }
 
     return (
