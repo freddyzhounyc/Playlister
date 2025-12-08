@@ -19,9 +19,11 @@ const EditPlaylistModal = () => {
         title: "Untitled",
         artist: "?",
         year: 2000,
-        youTubeId: "rgV4KRVUnN4"
+        youTubeId: "rgV4KRVUnN4",
+        ownerId: -1
     }]);
     const [dupClicked, setDupClicked] = useState(0);
+    const [delClicked, setDelClicked] = useState(0);
 
     useEffect(() => {
         getSongsList();
@@ -38,14 +40,17 @@ const EditPlaylistModal = () => {
     const handleSongIdsListToSongsList = async (songsIdsList) => {
         const result = [];
         for (let i = 0; i < songsIdsList.length; i++) {
-            const song = await handleGetSongById(songsIdsList[i]);
-            result.push({
-                id: song.id,
-                title: song.title,
-                artist: song.artist,
-                year: song.year,
-                youTubeId: song.youTubeId
-            });
+            if (songsIdsList[i]) {
+                const song = await handleGetSongById(songsIdsList[i]);
+                result.push({
+                    id: song.id,
+                    title: song.title,
+                    artist: song.artist,
+                    year: song.year,
+                    youTubeId: song.youTubeId,
+                    ownerId: song.ownerId
+                });
+            }
         }
         return result;
     }
@@ -59,6 +64,12 @@ const EditPlaylistModal = () => {
         await store.duplicateSong(store.currentList.id, song);
         await getSongsList();
         setDupClicked(dupClicked + 1);
+    }
+    const handleDeleteSong = async (song, songIndex) => {
+        songList.splice(songIndex, 1); // Pop from here
+        store.addRemoveSongTransaction(store.currentList.id, songIndex, song);
+        await getSongsList();
+        setDelClicked(delClicked + 1);
     }
 
     return (
@@ -84,19 +95,19 @@ const EditPlaylistModal = () => {
                         </Box>
                         <Box sx={{ display: "flex", flexDirection: "column", width: "100%", height: "75%", marginTop: "10px", backgroundColor: "white", borderRadius: "10px", overflow: "auto" }}>
                             {songList.map((song, index) => {
-                                return <EditPlaylistModalSongCard key={index} song={song} num={index+1} handleDuplicateSong={handleDuplicateSong} />
+                                return <EditPlaylistModalSongCard key={index} song={song} num={index+1} handleDuplicateSong={handleDuplicateSong} handleDeleteSong={handleDeleteSong}/>
                             })}
                         </Box>
                         <Box sx={{ display: "flex", marginTop: "15px", width: "100%" }}>
                             <Box>
-                                <Button variant="contained" onClick={null} size="small"
+                                <Button variant="contained" onClick={() => store.undo()} size="small" disabled={!store.canUndo()}
                                 sx={{ fontSize: "18px", width: "100px", height: "50px", marginTop: "3px", backgroundColor: "#2C2C2C", textTransform: "none", borderRadius: "7px", border: "1px solid black" }}>
                                     <UndoIcon />
                                     <Typography variant="body1" component="h6" sx={{ marginLeft: "5px", fontSize: "20px", fontWeight: "bold" }}>
                                         Undo
                                     </Typography>
                                 </Button>
-                                <Button variant="contained" onClick={null} size="small"
+                                <Button variant="contained" onClick={() => store.redo()} size="small" disabled={!store.canRedo()}
                                 sx={{ fontSize: "18px", width: "100px", height: "50px", marginTop: "3px", marginLeft: "10px", backgroundColor: "#2C2C2C", textTransform: "none", borderRadius: "7px", border: "1px solid black" }}>
                                     <RedoIcon />
                                     <Typography variant="body1" component="h6" sx={{ marginLeft: "5px", fontSize: "20px", fontWeight: "bold" }}>

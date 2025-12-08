@@ -6,7 +6,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useContext } from 'react';
 import GlobalStoreContext from '../store/GlobalStoreContextProvider';
 
-const EditPlaylistModalSongCard = ({ song, num, handleDuplicateSong }) => {
+const EditPlaylistModalSongCard = ({ song, num, handleDuplicateSong, handleDeleteSong }) => {
     const { store } = useContext(GlobalStoreContext);
 
     return (
@@ -25,7 +25,7 @@ const EditPlaylistModalSongCard = ({ song, num, handleDuplicateSong }) => {
                 sx={{ fontSize: "25px", width: "fit-content", height: "100%", backgroundColor: "#FFF7B2", color: "black", textTransform: "none", borderRadius: "10px" }}>
                     <ContentCopyIcon />
                 </IconButton>
-                <IconButton onClick={null}
+                <IconButton onClick={() => handleDeleteSong(song, num-1)}
                 sx={{ fontSize: "25px", width: "fit-content", height: "100%", backgroundColor: "#FFF7B2", color: "black", textTransform: "none", borderRadius: "10px" }}>
                     <CloseIcon />
                 </IconButton>

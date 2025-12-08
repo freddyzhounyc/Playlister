@@ -25,5 +25,6 @@ router.post("/playlistSong", auth.verify, PlaylistSongController.createPlaylistS
 router.post("/song", auth.verify, SongController.createSong);
 router.get("/song/:id", auth.verify, SongController.getSongById);
 router.get("/songs", SongController.getSongs); // Public Endpoint
+router.delete("/song/:id", auth.verify, SongController.deleteSongById);
 
 module.exports = router;

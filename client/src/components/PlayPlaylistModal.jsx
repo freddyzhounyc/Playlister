@@ -21,7 +21,8 @@ const PlayPlaylistModal = () => {
         title: "Untitled",
         artist: "?",
         year: 2000,
-        youTubeId: "rgV4KRVUnN4"
+        youTubeId: "rgV4KRVUnN4",
+        ownerId: -1
     }]);
     const [currentSongPlayingIndex, setCurrentSongPlayingIndex] = useState(0);
 
@@ -46,31 +47,34 @@ const PlayPlaylistModal = () => {
     const handleSongIdsListToSongsList = async (songsIdsList) => {
         const result = [];
         for (let i = 0; i < songsIdsList.length; i++) {
-            const song = await handleGetSongById(songsIdsList[i]);
-            result.push({
-                id: song.id,
-                title: song.title,
-                artist: song.artist,
-                year: song.year,
-                youTubeId: song.youTubeId
-            });
+            if (songsIdsList[i]) {
+                const song = await handleGetSongById(songsIdsList[i]);
+                result.push({
+                    id: song.id,
+                    title: song.title,
+                    artist: song.artist,
+                    year: song.year,
+                    youTubeId: song.youTubeId,
+                    ownerId: song.ownerId
+                });
+            }
         }
         return result;
     }
 
     const handleSongSkipNext = (event) => {
         const playlistLength = songList.length;
-        if (currentSongPlayingIndex === playlistLength-1)
-            setCurrentSongPlayingIndex(0);
-        else
-            setCurrentSongPlayingIndex(currentSongPlayingIndex + 1);
+        setCurrentSongPlayingIndex(prevIndex => {
+            const nextIndex = prevIndex === playlistLength-1 ? 0 : prevIndex + 1
+            return nextIndex;
+        })
     }
     const handleSongSkipPrevious = (event) => {
         const playlistLength = songList.length;
-        if (currentSongPlayingIndex === 0)
-            setCurrentSongPlayingIndex(playlistLength - 1);
-        else
-            setCurrentSongPlayingIndex(currentSongPlayingIndex - 1);
+        setCurrentSongPlayingIndex(prevIndex => {
+            const nextIndex = prevIndex === 0 ? playlistLength - 1 : prevIndex - 1
+            return nextIndex;
+        })
     }
 
     const handleCloseModal = (event) => {

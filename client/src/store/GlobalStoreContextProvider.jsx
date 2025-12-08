@@ -4,6 +4,7 @@ import { jsTPS } from "jstps";
 import AuthContext from '../auth/AuthContextProvider';
 import storeRequestSender from './requests/index';
 import CreateSong_Transaction from '../transactions/CreateSong_Transaction';
+import RemoveSong_Transaction from '../transactions/RemoveSong_Transaction';
 
 export const GlobalStoreContext = createContext({});
 
@@ -23,7 +24,8 @@ export const GlobalStoreActionType = {
     PLAY_PLAYLIST: "PLAY_PLAYLIST",
     EDIT_PLAYLIST: "EDIT_PLAYLIST",
     UPDATE_CURRENT_LIST_NAME: "UPDATE_CURRENT_LIST_NAME",
-    CREATE_SONG: "CREATE_SONG"
+    CREATE_SONG: "CREATE_SONG",
+    DELETE_SONG: "DELETE_SONG"
 }
 
 const tps = new jsTPS();
@@ -140,6 +142,13 @@ function GlobalStoreContextProvider(props) {
                 });
             }
             case GlobalStoreActionType.CREATE_SONG: {
+                return setStore({
+                    ...store,
+                    currentList: payload.newCurrentList, // Really just store.currentList
+                    newListCounter: store.newListCounter + 1
+                });
+            }
+            case GlobalStoreActionType.DELETE_SONG: {
                 return setStore({
                     ...store,
                     currentList: payload.newCurrentList, // Really just store.currentList
@@ -279,6 +288,7 @@ function GlobalStoreContextProvider(props) {
     }
     store.showEditPlaylistModal = async (playlistId) => {
         try {
+            tps.clearAllTransactions(); // Clear transaction stack before opening up editing modal
             const response = await storeRequestSender.getPlaylistById(playlistId);
             const data = await response.json();
             if (data.success) {
@@ -321,12 +331,13 @@ function GlobalStoreContextProvider(props) {
         }
     }
 
-    store.addCreateSongTransaction = async (playlistId, title, artist, year, youTubeId) => {
+    store.addCreateSongTransaction = async (playlistId, title, artist, year, youTubeId, ownerId) => {
         let song = {
             title: title,
             artist: artist,
             year: year,
-            youTubeId: youTubeId
+            youTubeId: youTubeId,
+            ownerId: ownerId
         }
         const songs = await store.getSongsInPlaylist(playlistId);
         let transaction = new CreateSong_Transaction(store, songs.length, song, playlistId);
@@ -339,7 +350,8 @@ function GlobalStoreContextProvider(props) {
                 title: song.title,
                 artist: song.artist,
                 year: song.year,
-                youTubeId: song.youTubeId
+                youTubeId: song.youTubeId,
+                ownerId: song.ownerId
             }
             const songResponse = await storeRequestSender.createSong(newSong);
             const songData = await songResponse.json();
@@ -368,7 +380,45 @@ function GlobalStoreContextProvider(props) {
         }
     }
     store.duplicateSong = async (playlistId, song) => {
-        await store.addCreateSongTransaction(playlistId, song.title + " (Copy)", song.artist, song.year, song.youTubeId);
+        await store.addCreateSongTransaction(playlistId, song.title + " (Copy)", song.artist, song.year, song.youTubeId, store.currentList.ownerId);
+    }
+
+    store.addRemoveSongTransaction = (playlistId, index, song) => {
+        let transaction = new RemoveSong_Transaction(store, index, song, playlistId);
+        tps.processTransaction(transaction);
+    }
+    store.removeSong = async (index, song) => {
+        try {
+            const response = await storeRequestSender.deleteSongById(song.id, store.currentList.id);
+            const data = await response.json();
+            if (data.success) {
+                storeReducer({
+                    type: GlobalStoreActionType.DELETE_SONG,
+                    payload: {
+                        newCurrentList: {
+                            ...store.currentList,
+                            name: store.currentList.name
+                        }
+                    }
+                })
+            }
+        } catch (err) {
+            console.log(err.message);
+        }
+    }
+
+    store.undo = function () {
+        tps.undoTransaction();
+    }
+    store.redo = function () {
+        tps.doTransaction();
+    }
+
+    store.canUndo = function() {
+        return ((store.currentList !== null) && tps.hasTransactionToUndo());
+    }
+    store.canRedo = function() {
+        return ((store.currentList !== null) && tps.hasTransactionToDo());
     }
 
     return (

@@ -35,6 +35,14 @@ const createSong = (sequelize) => {
             validate: {
                 notEmpty: true
             }
+        },
+        ownerId: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            references: {
+                model: "users",
+                key: "id"
+            }
         }
     }, {
         timestamps: true
