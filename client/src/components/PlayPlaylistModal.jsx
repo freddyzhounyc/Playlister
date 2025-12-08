@@ -78,8 +78,7 @@ const PlayPlaylistModal = () => {
     }
 
     return (
-        // store.currentModal === "PLAY_PLAYLIST_MODAL"
-        <Modal open={true} keepMounted sx={{ marginLeft: "22.5%", marginTop: "4%", width: "55%", height: "80vh", border: "1px solid black" }}>
+        <Modal open={store.currentModal === "PLAY_PLAYLIST_MODAL"} keepMounted sx={{ marginLeft: "22.5%", marginTop: "4%", width: "55%", height: "80vh", border: "1px solid black" }}>
             <Box sx={{ display: "flex", flexDirection: "column", width: "100%", height: "100%" }}>
                 <Box sx={{ backgroundColor: "#0E8503", width: "100%", height: "6%", border: "1px solid black" }}>
                     <Typography variant="h6" component="h1" sx={{ marginTop: "5px", marginLeft: "10px", color: "white" }}>
