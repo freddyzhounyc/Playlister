@@ -1,5 +1,6 @@
 import { useState, useContext, createContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { jsTPS } from "jstps";
 import AuthContext from '../auth/AuthContextProvider';
 import storeRequestSender from './requests/index';
 
@@ -18,13 +19,17 @@ export const GlobalStoreActionType = {
     REMOVE_SONG: "REMOVE_SONG",
     HIDE_MODALS: "HIDE_MODALS",
     INCREMENT_NEW_LIST_COUNTER: "INCREMENT_NEW_LIST_COUNTER",
-    PLAY_PLAYLIST: "PLAY_PLAYLIST"
+    PLAY_PLAYLIST: "PLAY_PLAYLIST",
+    EDIT_PLAYLIST: "EDIT_PLAYLIST"
 }
+
+const tps = new jsTPS();
 
 const CurrentModal = {
     NONE : "NONE",
     DELETE_LIST : "DELETE_LIST",
     EDIT_SONG : "EDIT_SONG",
+    EDIT_PLAYLIST_MODAL: "EDIT_PLAYLIST_MODAL",
     PLAY_PLAYLIST_MODAL: "PLAY_PLAYLIST_MODAL",
     ERROR : "ERROR"
 }
@@ -115,6 +120,13 @@ function GlobalStoreContextProvider(props) {
                     listNameActive: false,
                     listIdMarkedForDeletion: null,
                     listMarkedForDeletion: null
+                });
+            }
+            case GlobalStoreActionType.EDIT_PLAYLIST: {
+                return setStore({
+                    ...store,
+                    currentModal: CurrentModal.EDIT_PLAYLIST_MODAL,
+                    currentList: payload.playlist
                 });
             }
             default:
@@ -244,6 +256,21 @@ function GlobalStoreContextProvider(props) {
                 });
             } else
                 throw new Error("Failed to play playlist!");
+        } catch (err) {
+            console.log(err.message);
+        }
+    }
+    store.showEditPlaylistModal = async (playlistId) => {
+        try {
+            const response = await storeRequestSender.getPlaylistById(playlistId);
+            const data = await response.json();
+            if (data.success) {
+                storeReducer({
+                    type: GlobalStoreActionType.EDIT_PLAYLIST,
+                    payload: {playlist: data.playlist}
+                });
+            } else
+                throw new Error("Failed to edit playlist!");
         } catch (err) {
             console.log(err.message);
         }

@@ -61,6 +61,10 @@ const PlaylistCard = ({ pair }) => {
         event.stopPropagation();
         store.showPlayPlaylistModal(pair.id);
     }
+    const handleEditPlaylist = (event) => {
+        event.stopPropagation();
+        store.showEditPlaylistModal(pair.id);
+    }
 
     return (
         <Accordion sx={{ marginBottom: "20px", width: "100%" }}>
@@ -87,7 +91,7 @@ const PlaylistCard = ({ pair }) => {
                         sx={{ fontSize: "13px", width: "fit-content", height: "30px", marginTop: "10px", backgroundColor: "#077836", textTransform: "none", borderRadius: "7px", border: "1px solid black" }}>
                             Copy
                         </Button>
-                        <Button variant="contained" onClick={handleButtonPress} size="small"
+                        <Button variant="contained" onClick={handleEditPlaylist} size="small"
                         sx={{ fontSize: "13px", width: "fit-content", height: "30px", marginTop: "10px", backgroundColor: "#3A64C4", textTransform: "none", borderRadius: "7px", border: "1px solid black" }}>
                             Edit
                         </Button>

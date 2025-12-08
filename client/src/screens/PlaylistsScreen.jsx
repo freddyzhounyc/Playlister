@@ -11,6 +11,7 @@ import GlobalStoreContext from '../store/GlobalStoreContextProvider';
 import ClearableTextField from '../components/ClearableTextField';
 import PlaylistCard from '../components/PlaylistCard';
 import PlayPlaylistModal from '../components/PlayPlaylistModal';
+import EditPlaylistModal from '../components/EditPlaylistModal';
 
 const PlaylistsScreen = () => {
     const { store } = useContext(GlobalStoreContext);
@@ -51,6 +52,9 @@ const PlaylistsScreen = () => {
     let playPlaylistModal = "";
     if (store.currentModal === "PLAY_PLAYLIST_MODAL")
         playPlaylistModal = <PlayPlaylistModal />
+    let editPlaylistModal = "";
+    if (store.currentModal === "EDIT_PLAYLIST_MODAL")
+        editPlaylistModal = <EditPlaylistModal />
 
     return (
         <Box className="screen"
@@ -143,6 +147,7 @@ const PlaylistsScreen = () => {
                 </Button>
             </Box>
             { playPlaylistModal }
+            { editPlaylistModal }
         </Box>
     )
 }
