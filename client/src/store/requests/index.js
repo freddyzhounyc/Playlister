@@ -62,6 +62,21 @@ export const getUserByPlaylistId = async (playlistId) => {
     });
     return response;
 }
+export const updatePlaylistNameById = async (id, playlist) => {
+    const response = await fetch(serverStoreUrl + "/playlist/" + id, {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            playlist: {
+                name: playlist.name,
+            }
+        })
+    });
+    return response;
+}
 
 // PlaylistSong Controller
 export const getSongsInPlaylist = async (playlistId) => {
@@ -88,6 +103,7 @@ const apis = {
     getAllPlaylistsByName,
     getPlaylistPairs,
     getUserByPlaylistId,
+    updatePlaylistNameById,
     getSongsInPlaylist,
     getSongById
 }

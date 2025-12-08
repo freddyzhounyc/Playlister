@@ -49,6 +49,11 @@ const EditPlaylistModal = () => {
         return result;
     }
 
+    const handleEditPlaylistModalClose = async () => {
+        await store.updateCurrentListName(playlistNameInput);
+        store.loadIdNamePairs();
+    }
+
     return (
         <Modal open={store.currentModal === "EDIT_PLAYLIST_MODAL"} keepMounted sx={{ marginLeft: "22.5%", marginTop: "4%", width: "55%", height: "80vh", border: "1px solid black" }}>
             <Box sx={{ display: "flex", flexDirection: "column", width: "100%", height: "100%" }}>
@@ -94,7 +99,7 @@ const EditPlaylistModal = () => {
                             </Box>
                             <Box sx={{ flexGrow: 1 }} />
                             <Box>
-                                <Button variant="contained" onClick={null} size="small"
+                                <Button variant="contained" onClick={handleEditPlaylistModalClose} size="small"
                                 sx={{ fontSize: "18px", width: "100px", height: "50px", marginTop: "3px", marginRight: "0px", backgroundColor: "#2C2C2C", textTransform: "none", borderRadius: "7px", border: "1px solid black" }}>
                                     Close
                                 </Button>
