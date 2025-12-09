@@ -1,0 +1,746 @@
+{
+	"info": {
+		"_postman_id": "playlister-api-collection",
+		"name": "Playlister API Collection",
+		"description": "Complete API testing collection for Playlister application",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Response has success field\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"});",
+									"if (pm.response.json().success) {",
+									"    pm.environment.set(\"userId\", pm.response.json().user.userId);",
+									"    pm.environment.set(\"userEmail\", pm.response.json().user.email);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"profileImage\": \"https://via.placeholder.com/150\",\n    \"userName\": \"TestUser\",\n    \"email\": \"test@example.com\",\n    \"password\": \"password123\",\n    \"passwordVerify\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "register"]
+						}
+					}
+				},
+				{
+					"name": "Login User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"Response has success field\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('success');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"{{userEmail}}\",\n    \"password\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Get Logged In",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/loggedIn",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "loggedIn"]
+						}
+					}
+				},
+				{
+					"name": "Logout User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/logout",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "logout"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"profileImage\": \"https://via.placeholder.com/150\",\n    \"userName\": \"UpdatedTestUser\",\n    \"email\": \"updated@example.com\",\n    \"password\": \"newpassword123\",\n    \"passwordVerify\": \"newpassword123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/user/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "user", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{userId}}"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Playlists",
+			"item": [
+				{
+					"name": "Get Playlist Pairs",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/playlistpairs",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "playlistpairs"]
+						}
+					}
+				},
+				{
+					"name": "Get Playlists",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/playlists",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "playlists"]
+						}
+					}
+				},
+				{
+					"name": "Get Playlists with Search",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/playlists?playlistName=test&sortBy=listeners&sortOrder=desc",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "playlists"],
+							"query": [
+								{
+									"key": "playlistName",
+									"value": "test"
+								},
+								{
+									"key": "sortBy",
+									"value": "listeners"
+								},
+								{
+									"key": "sortOrder",
+									"value": "desc"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Create Playlist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"if (pm.response.json().success) {",
+									"    pm.environment.set(\"playlistId\", pm.response.json().playlist.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Test Playlist\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/playlist",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "playlist"]
+						}
+					}
+				},
+				{
+					"name": "Get Playlist By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/playlist/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "playlist", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{playlistId}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Playlist Name",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"playlist\": {\n        \"name\": \"Updated Playlist Name\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/playlist/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "playlist", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{playlistId}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Copy Playlist",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/playlist/:id/copy",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "playlist", ":id", "copy"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{playlistId}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Record Playlist Listen",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"sessionId\": \"test-session-123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/playlist/:id/listen",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "playlist", ":id", "listen"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{playlistId}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete Playlist",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/playlist/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "playlist", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{playlistId}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get User By Playlist ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/userByPlaylistId/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "userByPlaylistId", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{playlistId}}"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Songs",
+			"item": [
+				{
+					"name": "Get Songs",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/songs",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "songs"]
+						}
+					}
+				},
+				{
+					"name": "Get Songs with Search",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/songs?title=test&artist=artist&year=2024&sortBy=title&sortOrder=asc",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "songs"],
+							"query": [
+								{
+									"key": "title",
+									"value": "test"
+								},
+								{
+									"key": "artist",
+									"value": "artist"
+								},
+								{
+									"key": "year",
+									"value": "2024"
+								},
+								{
+									"key": "sortBy",
+									"value": "title"
+								},
+								{
+									"key": "sortOrder",
+									"value": "asc"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Create Song",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"if (pm.response.json().success) {",
+									"    pm.environment.set(\"songId\", pm.response.json().song.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Test Song\",\n    \"artist\": \"Test Artist\",\n    \"year\": 2024,\n    \"youTubeId\": \"test123\",\n    \"ownerId\": {{userId}}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/song",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "song"]
+						}
+					}
+				},
+				{
+					"name": "Get Song By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/song/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "song", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{songId}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Song",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Updated Test Song\",\n    \"artist\": \"Updated Artist\",\n    \"year\": 2025,\n    \"youTubeId\": \"updated123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/song/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "song", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{songId}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete Song",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/song/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "song", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{songId}}"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Playlist Songs",
+			"item": [
+				{
+					"name": "Get Songs In Playlist",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/songsInPlaylist/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "songsInPlaylist", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "{{playlistId}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Add Song To Playlist",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"playlistId\": {{playlistId}},\n    \"songId\": {{songId}},\n    \"order\": 0\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/playlistSong",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "playlistSong"]
+						}
+					}
+				},
+				{
+					"name": "Update Playlist Song Orders",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"songOrders\": [\n        {\n            \"songId\": {{songId}},\n            \"order\": 0\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/playlist/:playlistId/songOrders",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "playlist", ":playlistId", "songOrders"],
+							"variable": [
+								{
+									"key": "playlistId",
+									"value": "{{playlistId}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Remove Song From Playlist",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/playlist/:playlistId/song/:songId",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "playlist", ":playlistId", "song", ":songId"],
+							"variable": [
+								{
+									"key": "playlistId",
+									"value": "{{playlistId}}"
+								},
+								{
+									"key": "songId",
+									"value": "{{songId}}"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Error Cases",
+			"item": [
+				{
+					"name": "Register - Missing Fields",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userName\": \"Test\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "register"]
+						}
+					}
+				},
+				{
+					"name": "Register - Password Mismatch",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"profileImage\": \"https://via.placeholder.com/150\",\n    \"userName\": \"TestUser2\",\n    \"email\": \"test2@example.com\",\n    \"password\": \"password123\",\n    \"passwordVerify\": \"differentpassword\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["auth", "register"]
+						}
+					}
+				},
+				{
+					"name": "Get Playlist - Not Found",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/playlist/999999",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "playlist", "999999"]
+						}
+					}
+				},
+				{
+					"name": "Get Song - Not Found",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/song/999999",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "song", "999999"]
+						}
+					}
+				},
+				{
+					"name": "Create Song - Duplicate",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Test Song\",\n    \"artist\": \"Test Artist\",\n    \"year\": 2024,\n    \"youTubeId\": \"test123\",\n    \"ownerId\": {{userId}}\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/song",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "song"]
+						}
+					}
+				},
+				{
+					"name": "Update User - Unauthorized",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"profileImage\": \"https://via.placeholder.com/150\",\n    \"userName\": \"Unauthorized\",\n    \"email\": \"unauthorized@example.com\",\n    \"password\": \"password123\",\n    \"passwordVerify\": \"password123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/user/999999",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "user", "999999"]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:4000",
+			"type": "string"
+		}
+	]
+}
