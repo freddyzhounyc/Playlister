@@ -16,15 +16,21 @@ router.post("/playlist", auth.verify, PlaylistController.createPlaylist);
 router.get("/playlist/:id", PlaylistController.getPlaylistById) // Public Endpoint
 router.get("/playlists", PlaylistController.getPlaylists) // Public Endpoint
 router.put("/playlist/:id", auth.verify, PlaylistController.updatePlaylistName);
+router.post("/playlist/:id/copy", auth.verify, PlaylistController.copyPlaylist);
+router.delete("/playlist/:id", auth.verify, PlaylistController.deletePlaylist);
+router.post("/playlist/:id/listen", PlaylistController.recordPlaylistListen); // Public Endpoint
 
 // PlaylistSong Controller
 router.get("/songsInPlaylist/:id", PlaylistSongController.getSongsInPlaylist) // Public Endpoint
 router.post("/playlistSong", auth.verify, PlaylistSongController.createPlaylistSong);
+router.delete("/playlist/:playlistId/song/:songId", auth.verify, PlaylistSongController.deletePlaylistSong);
+router.put("/playlist/:playlistId/songOrders", auth.verify, PlaylistSongController.updatePlaylistSongOrders);
 
 // Song Controller
 router.post("/song", auth.verify, SongController.createSong);
-router.get("/song/:id", auth.verify, SongController.getSongById);
+router.get("/song/:id", SongController.getSongById); // Public Endpoint
 router.get("/songs", SongController.getSongs); // Public Endpoint
+router.put("/song/:id", auth.verify, SongController.updateSong);
 router.delete("/song/:id", auth.verify, SongController.deleteSongById);
 
 module.exports = router;

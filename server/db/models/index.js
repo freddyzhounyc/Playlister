@@ -10,6 +10,7 @@ const User = require('./user-model')(sequelize);
 const Playlist = require('./playlist-model')(sequelize);
 const Song = require('./song-model')(sequelize);
 const PlaylistSong = require('./PlaylistSong-model')(sequelize);
+const PlaylistListener = require('./playlistListener-model')(sequelize);
 
 User.hasMany(Playlist, {
     foreignKey: "ownerId",
@@ -44,6 +45,26 @@ Song.belongsToMany(Playlist, {
     as: "playlists"
 });
 
+Playlist.hasMany(PlaylistListener, {
+    foreignKey: "playlistId",
+    as: "listeners",
+    onDelete: "CASCADE"
+});
+PlaylistListener.belongsTo(Playlist, {
+    foreignKey: "playlistId",
+    as: "playlist"
+});
+
+User.hasMany(PlaylistListener, {
+    foreignKey: "userId",
+    as: "playlistListeners",
+    onDelete: "CASCADE"
+});
+PlaylistListener.belongsTo(User, {
+    foreignKey: "userId",
+    as: "user"
+});
+
 const initializeDB = async () => {
     await sequelize.sync();
 }
@@ -53,5 +74,6 @@ module.exports = {
     Playlist,
     Song,
     PlaylistSong,
+    PlaylistListener,
     initializeDB
 }
