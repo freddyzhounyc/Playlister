@@ -6,7 +6,7 @@ import SkipNextIcon from '@mui/icons-material/SkipNext';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import { useEffect, useRef, useState } from "react";
 
-const YouTubePlayer = ({ videoId, handleSongSkipPrevious, handleSongSkipNext }) => {
+const YouTubePlayer = ({ videoId, handleSongSkipPrevious, handleSongSkipNext, showControls = true }) => {
     const playerRef = useRef(null);
     const containerRef = useRef(null);
 
@@ -67,26 +67,30 @@ const YouTubePlayer = ({ videoId, handleSongSkipPrevious, handleSongSkipNext }) 
     }
     const handleSongEnd = (event) => {
         setPaused(true);
-        handleSongSkipNext();
+        if (handleSongSkipNext) {
+            handleSongSkipNext();
+        }
     }
 
     return (
         <Box>
             <div ref={containerRef}></div>
-            <Box sx={{ display: "flex", marginLeft: "140px" }}>
-                <Button variant="contained" onClick={handleSongSkipPrevious}
-                sx={{ width: "fit-content", height: "37px", marginTop: "40px", backgroundColor: "#2C2C2C", textTransform: "none", borderRadius: "0px" }}>
-                    <SkipPreviousIcon />
-                </Button>
-                <Button variant="contained" onClick={handlePausePlay}
-                sx={{ width: "fit-content", height: "37px", marginTop: "40px", backgroundColor: "#2C2C2C", textTransform: "none", borderRadius: "0px" }}>
-                    {paused ? <PlayArrowIcon /> : <PauseIcon /> }
-                </Button>
-                <Button variant="contained" onClick={handleSongSkipNext}
-                sx={{ width: "fit-content", height: "37px", marginTop: "40px", backgroundColor: "#2C2C2C", textTransform: "none", borderRadius: "0px" }}>
-                    <SkipNextIcon />
-                </Button>
-            </Box>
+            {showControls && (
+                <Box sx={{ display: "flex", marginLeft: "140px" }}>
+                    <Button variant="contained" onClick={handleSongSkipPrevious}
+                    sx={{ width: "fit-content", height: "37px", marginTop: "40px", backgroundColor: "#2C2C2C", textTransform: "none", borderRadius: "0px" }}>
+                        <SkipPreviousIcon />
+                    </Button>
+                    <Button variant="contained" onClick={handlePausePlay}
+                    sx={{ width: "fit-content", height: "37px", marginTop: "40px", backgroundColor: "#2C2C2C", textTransform: "none", borderRadius: "0px" }}>
+                        {paused ? <PlayArrowIcon /> : <PauseIcon /> }
+                    </Button>
+                    <Button variant="contained" onClick={handleSongSkipNext}
+                    sx={{ width: "fit-content", height: "37px", marginTop: "40px", backgroundColor: "#2C2C2C", textTransform: "none", borderRadius: "0px" }}>
+                        <SkipNextIcon />
+                    </Button>
+                </Box>
+            )}
         </Box>
     );
 }
