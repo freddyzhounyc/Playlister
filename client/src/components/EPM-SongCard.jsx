@@ -3,14 +3,75 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CloseIcon from '@mui/icons-material/Close';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import GlobalStoreContext from '../store/GlobalStoreContextProvider';
 
-const EditPlaylistModalSongCard = ({ song, num, handleDuplicateSong, handleDeleteSong }) => {
+const EditPlaylistModalSongCard = ({ song, num, handleDuplicateSong, handleDeleteSong, index, onDragStart, onDragOver, onDrop, onDragEnd }) => {
     const { store } = useContext(GlobalStoreContext);
+    const [isDragging, setIsDragging] = useState(false);
+    const [isDragOver, setIsDragOver] = useState(false);
+
+    const handleDragStart = (e) => {
+        setIsDragging(true);
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', index.toString());
+        if (onDragStart) {
+            onDragStart(e, index);
+        }
+    };
+
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        setIsDragOver(true);
+        if (onDragOver) {
+            onDragOver(e, index);
+        }
+    };
+
+    const handleDragLeave = (e) => {
+        setIsDragOver(false);
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        setIsDragOver(false);
+        const draggedIndex = parseInt(e.dataTransfer.getData('text/plain'));
+        if (onDrop && draggedIndex !== index) {
+            onDrop(e, draggedIndex, index);
+        }
+    };
+
+    const handleDragEnd = (e) => {
+        setIsDragging(false);
+        setIsDragOver(false);
+        if (onDragEnd) {
+            onDragEnd(e);
+        }
+    };
 
     return (
-        <Box sx={{ flexShrink: 0, display: "flex", width: "97%", height: "10%", backgroundColor: "#FFF7B2", marginLeft: "10px", marginTop: "10px", borderRadius: "7px", border: "1px solid black" }}>
+        <Box 
+            draggable
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            onDragEnd={handleDragEnd}
+            sx={{ 
+                flexShrink: 0, 
+                display: "flex", 
+                width: "97%", 
+                height: "10%", 
+                backgroundColor: isDragOver ? "#FFE082" : isDragging ? "#E0E0E0" : "#FFF7B2", 
+                marginLeft: "10px", 
+                marginTop: "10px", 
+                borderRadius: "7px", 
+                border: "1px solid black",
+                cursor: "move",
+                opacity: isDragging ? 0.5 : 1
+            }}
+        >
             <Box sx={{ display: "flex", marginTop: "10px", marginLeft: "10px" }}>
                 <Typography variant="body1" component="h6" sx={{ fontSize: "21px", color: "#1E1E1E" }}>
                     {num + "."}

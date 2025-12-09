@@ -8,13 +8,16 @@ import SearchIcon from '@mui/icons-material/Search';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { useState, useContext, useEffect } from 'react';
 import GlobalStoreContext from '../store/GlobalStoreContextProvider';
+import AuthContext from '../auth/AuthContextProvider';
 import ClearableTextField from '../components/ClearableTextField';
 import PlaylistCard from '../components/PlaylistCard';
 import PlayPlaylistModal from '../components/PlayPlaylistModal';
 import EditPlaylistModal from '../components/EditPlaylistModal';
+import DeletePlaylistModal from '../components/DeletePlaylistModal';
 
 const PlaylistsScreen = () => {
     const { store } = useContext(GlobalStoreContext);
+    const { auth } = useContext(AuthContext);
 
     const [searchByPlaylistName, setSearchByPlaylistName] = useState("");
     const [searchByUserName, setSearchByUserName] = useState("");
@@ -23,30 +26,64 @@ const PlaylistsScreen = () => {
     const [searchBySongYear, setSearchBySongYear] = useState("");
 
     const [sortByIndex, setSortByIndex] = useState(0);
-    const sortByChoices = ["Listeners (Hi-Lo)", "Listeners (Lo-Hi)", "Playlist Name (Hi-Lo)", 
-                       "Playlist Name (Lo-Hi)", "User Name (Hi-Lo)", "User Name (Lo-Hi)"];
+    const sortByChoices = [
+        { label: "Listeners (Hi-Lo)", type: "listeners", order: "desc" },
+        { label: "Listeners (Lo-Hi)", type: "listeners", order: "asc" },
+        { label: "Playlist Name (A-Z)", type: "name", order: "asc" },
+        { label: "Playlist Name (Z-A)", type: "name", order: "desc" },
+        { label: "User Name (A-Z)", type: "userName", order: "asc" },
+        { label: "User Name (Z-A)", type: "userName", order: "desc" }
+    ];
 
     const [anchorEl, setAnchorEl] = useState(null);
     const isMenuOpen = Boolean(anchorEl);
 
     useEffect(() => {
-        store.loadIdNamePairs();
+        store.loadPlaylists();
     }, []);
 
     const handleProfileMenuOpen = (event) => {
         setAnchorEl(event.currentTarget);
     }
+
     const handleMenuClose = () => {
         setAnchorEl(null);
     }
+
     const handleMenuCloseBy = (index) => {
         setSortByIndex(index);
+        const sortChoice = sortByChoices[index];
+        store.sortPlaylists(sortChoice.type, sortChoice.order);
         handleMenuClose();
     }
 
     const handleCreateNewPlaylist = async () => {
         await store.createNewList();
-        await store.loadIdNamePairs();
+    }
+
+    const handleSearch = async () => {
+        await store.searchPlaylists({
+            playlistName: searchByPlaylistName,
+            userName: searchByUserName,
+            songTitle: searchBySongTitle,
+            songArtist: searchBySongArtist,
+            songYear: searchBySongYear
+        });
+    }
+
+    const handleClear = async () => {
+        setSearchByPlaylistName("");
+        setSearchByUserName("");
+        setSearchBySongTitle("");
+        setSearchBySongArtist("");
+        setSearchBySongYear("");
+        await store.clearPlaylistSearch();
+    }
+
+    const handleKeyPress = (event) => {
+        if (event.key === 'Enter') {
+            handleSearch();
+        }
     }
 
     let playPlaylistModal = "";
@@ -55,6 +92,9 @@ const PlaylistsScreen = () => {
     let editPlaylistModal = "";
     if (store.currentModal === "EDIT_PLAYLIST_MODAL")
         editPlaylistModal = <EditPlaylistModal />
+    let deletePlaylistModal = "";
+    if (store.currentModal === "DELETE_PLAYLIST")
+        deletePlaylistModal = <DeletePlaylistModal />
 
     return (
         <Box className="screen"
@@ -64,19 +104,49 @@ const PlaylistsScreen = () => {
                 <Typography variant="h3" component="h1" sx={{ fontWeight: 900, color: "#C20CB9" }}>
                     Playlists
                 </Typography>
-                <ClearableTextField value={searchByPlaylistName} label={"by Playlist Name"} setInputValue={setSearchByPlaylistName} setWidth={450}/>
-                <ClearableTextField value={searchByUserName} label={"by User Name"} setInputValue={setSearchByUserName} setWidth={450}/>
-                <ClearableTextField value={searchBySongTitle} label={"by Song Title"} setInputValue={setSearchBySongTitle} setWidth={450}/>
-                <ClearableTextField value={searchBySongArtist} label={"by Song Artist"} setInputValue={setSearchBySongArtist} setWidth={450}/>
-                <ClearableTextField value={searchBySongYear} label={"by Song Year"} setInputValue={setSearchBySongYear} setWidth={450}/>
+                <ClearableTextField 
+                    value={searchByPlaylistName} 
+                    label={"by Playlist Name"} 
+                    setInputValue={setSearchByPlaylistName} 
+                    setWidth={450}
+                    onKeyPress={handleKeyPress}
+                />
+                <ClearableTextField 
+                    value={searchByUserName} 
+                    label={"by User Name"} 
+                    setInputValue={setSearchByUserName} 
+                    setWidth={450}
+                    onKeyPress={handleKeyPress}
+                />
+                <ClearableTextField 
+                    value={searchBySongTitle} 
+                    label={"by Song Title"} 
+                    setInputValue={setSearchBySongTitle} 
+                    setWidth={450}
+                    onKeyPress={handleKeyPress}
+                />
+                <ClearableTextField 
+                    value={searchBySongArtist} 
+                    label={"by Song Artist"} 
+                    setInputValue={setSearchBySongArtist} 
+                    setWidth={450}
+                    onKeyPress={handleKeyPress}
+                />
+                <ClearableTextField 
+                    value={searchBySongYear} 
+                    label={"by Song Year"} 
+                    setInputValue={setSearchBySongYear} 
+                    setWidth={450}
+                    onKeyPress={handleKeyPress}
+                />
                 <Box sx={{ display: "flex", width: "80%" }}>
-                    <Button variant="contained" onClick={null}
+                    <Button variant="contained" onClick={handleSearch}
                     sx={{ width: "fit-content", height: "37px", marginTop: "40px", backgroundColor: "#2C2C2C", textTransform: "none", borderRadius: "100px" }}>
                         <SearchIcon />
                         Search
                     </Button>
                     <Box sx={{ flexGrow: 1 }} />
-                    <Button variant="contained" onClick={null}
+                    <Button variant="contained" onClick={handleClear}
                     sx={{ width: "fit-content", height: "37px", marginTop: "40px", backgroundColor: "#2C2C2C", textTransform: "none", borderRadius: "100px" }}>
                         Clear
                     </Button>
@@ -91,7 +161,7 @@ const PlaylistsScreen = () => {
                         </Typography>
                         <Link underline="none" onClick={handleProfileMenuOpen}>
                             <Typography variant="h5" component="h3" sx={{ marginLeft: "5px", fontWeight: 500, "&:hover": { cursor: "pointer" } }}>
-                                {sortByChoices[sortByIndex]}
+                                {sortByChoices[sortByIndex].label}
                             </Typography>
                         </Link>
                     </Box>
@@ -109,45 +179,39 @@ const PlaylistsScreen = () => {
                     open={isMenuOpen}
                     onClose={handleMenuClose}
                     >
-                        <MenuItem onClick={() => handleMenuCloseBy(0)} sx={{ "&:hover": { backgroundColor: "rgba(58, 151, 240, 0.3)" } }}>
-                            Listeners (Hi-Lo)
-                        </MenuItem>
-                        <MenuItem onClick={() => handleMenuCloseBy(1)} sx={{ "&:hover": { backgroundColor: "rgba(58, 151, 240, 0.3)" } }}>
-                            Listeners (Lo-Hi)
-                        </MenuItem>
-                        <MenuItem onClick={() => handleMenuCloseBy(2)} sx={{ "&:hover": { backgroundColor: "rgba(58, 151, 240, 0.3)" } }}>
-                            Playlist Name (Hi-Lo)
-                        </MenuItem>
-                        <MenuItem onClick={() => handleMenuCloseBy(3)} sx={{ "&:hover": { backgroundColor: "rgba(58, 151, 240, 0.3)" } }}>
-                            Playlist Name (Lo-Hi)
-                        </MenuItem>
-                        <MenuItem onClick={() => handleMenuCloseBy(4)} sx={{ "&:hover": { backgroundColor: "rgba(58, 151, 240, 0.3)" } }}>
-                            User Name (Hi-Lo)
-                        </MenuItem>
-                        <MenuItem onClick={() => handleMenuCloseBy(5)} sx={{ "&:hover": { backgroundColor: "rgba(58, 151, 240, 0.3)" } }}>
-                            User Name (Lo-Hi)
-                        </MenuItem>
+                        {sortByChoices.map((choice, index) => (
+                            <MenuItem 
+                                key={index}
+                                onClick={() => handleMenuCloseBy(index)} 
+                                sx={{ "&:hover": { backgroundColor: "rgba(58, 151, 240, 0.3)" } }}
+                            >
+                                {choice.label}
+                            </MenuItem>
+                        ))}
                     </Menu>
                     <Box sx={{ flexGrow: 1 }}/>
                     <Box>
                         <Typography variant="h5" component="h3" sx={{ fontWeight: 500 }}>
-                            Playlists
+                            {store.playlists.length} Playlist{store.playlists.length !== 1 ? 's' : ''}
                         </Typography>
                     </Box>
                 </Box>
                 <Box sx={{ display: "flex", flexDirection: "column", height: "70%", marginTop: "50px", overflow: "auto" }}>
-                    {store.idNamePairs.map(pair => {
-                        return <PlaylistCard key={pair.id} pair={pair}/>
+                    {store.playlists.map(playlist => {
+                        return <PlaylistCard key={playlist.id} playlist={playlist}/>
                     })}
                 </Box>
-                <Button variant="contained" onClick={handleCreateNewPlaylist}
-                sx={{ width: "fit-content", height: "37px", marginTop: "57px", backgroundColor: "#2C2C2C", textTransform: "none", borderRadius: "100px" }}>
-                    <AddCircleOutlineIcon sx={{ marginRight: "5px" }}/>
-                    New Playlist
-                </Button>
+                {auth.user && (
+                    <Button variant="contained" onClick={handleCreateNewPlaylist}
+                    sx={{ width: "fit-content", height: "37px", marginTop: "57px", backgroundColor: "#2C2C2C", textTransform: "none", borderRadius: "100px" }}>
+                        <AddCircleOutlineIcon sx={{ marginRight: "5px" }}/>
+                        New Playlist
+                    </Button>
+                )}
             </Box>
             { playPlaylistModal }
             { editPlaylistModal }
+            { deletePlaylistModal }
         </Box>
     )
 }
